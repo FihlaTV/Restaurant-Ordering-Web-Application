@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.AnnotationTransactionAttribute
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-
 @Configuration
 public class Hibernateconfig {
     //${jdbc.driverClassName}

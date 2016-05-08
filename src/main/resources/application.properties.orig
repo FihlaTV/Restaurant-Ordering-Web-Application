@@ -10,9 +10,12 @@ hibernate.show_sql=true
 hibernate.hbm2ddl.auto=update
 hibernate.generate_statistics=true
 
-################### TheApp Configuration ##########################
-business.start.hour=06:00:00
-business.end.hour=21:00:00
+<<<<<<< HEAD
 
 ################### Item Category List ##########################
 item.category = Drink,Appetizer,Dessert,Main Course
+=======
+################### TheApp Configuration ##########################
+business.start.hour=06:00:00
+business.end.hour=21:00:00
+>>>>>>> 0b8964aa8acc87314af37603f44f3a67a8c96f29

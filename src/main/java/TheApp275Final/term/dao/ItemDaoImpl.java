@@ -1,0 +1,49 @@
+package TheApp275Final.term.dao;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import TheApp275Final.term.model.Item;
+
+
+@Repository
+@Transactional
+public class ItemDaoImpl implements ItemDao{
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	@Override
+	public List<Item> getAllItems() {	
+		@SuppressWarnings("unchecked")
+		List<Item> result = sessionFactory.getCurrentSession().
+								createCriteria(Item.class).addOrder( Order.asc("category")).list();
+		return result;
+	}
+	
+	@Override
+	public void deleteItem(Item item) {
+		sessionFactory.getCurrentSession().saveOrUpdate(item);
+	}
+	
+	@Override
+	public void addItem(Item item) {
+		sessionFactory.getCurrentSession().saveOrUpdate(item);
+	}
+	
+	@Override
+	public byte[] getImage(int id){
+		return null;
+	}
+	
+
+}

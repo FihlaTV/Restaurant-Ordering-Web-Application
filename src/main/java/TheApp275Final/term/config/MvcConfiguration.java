@@ -6,6 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
@@ -44,6 +46,14 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	        ppc.setIgnoreUnresolvablePlaceholders(true);
 	        return ppc;
 	    }
+	 
+	 //For File Upload
+	 @Bean
+	 public MultipartResolver multipartResolver() {
+	     org.springframework.web.multipart.commons.CommonsMultipartResolver multipartResolver = new org.springframework.web.multipart.commons.CommonsMultipartResolver();
+	     multipartResolver.setMaxUploadSize(10000000);
+	     return multipartResolver;
+	 }
 
 	
 }

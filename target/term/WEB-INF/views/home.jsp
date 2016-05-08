@@ -8,7 +8,20 @@
         <title>Home</title>
     </head>
     <body>
+	<form action="postData" method="POST">
         <h1>Hello World!</h1>
         <p>This is the homepage!</p>
-    </body>
+        Enter pickup_date :
+        <input type="date" name="pickup_date" />
+        <br/>
+        Enter total processing time 
+        <input type="text" name="tot_proc_time" />
+        <br/>
+          Enter user pickup time 
+        <input type="text" name="pickup_time" />
+        <br/>
+        
+        <input type="submit" name="Submit" value="submit" />
+		</form>
+	</body>
 </html>

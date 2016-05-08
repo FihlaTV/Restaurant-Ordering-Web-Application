@@ -49,7 +49,7 @@ public class LoginSucessHandler extends SimpleUrlAuthenticationSuccessHandler {
     		customer = customerService.getCustomer(username);
     		session.setAttribute("customer", customer);
     	}
-    	session.setMaxInactiveInterval(1000);
+    	session.setMaxInactiveInterval(99999);
     	
         String targetUrl = findRedirectURLForUserRole(authentication);
  

@@ -1,0 +1,56 @@
+package TheApp275Final.term.config;
+
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
+<<<<<<< HEAD
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+=======
+>>>>>>> 9a7fa288cbf858c08620df9dcf8d70993b02109e
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
+
+@Configuration
+<<<<<<< HEAD
+@Import({ Hibernateconfig.class })
+@ComponentScan(basePackages = "TheApp275Final.term")
+=======
+@ComponentScan(basePackages="TheApp275Final.term.*")
+@Import({Hibernateconfig.class})
+@EnableTransactionManagement
+>>>>>>> 9a7fa288cbf858c08620df9dcf8d70993b02109e
+@EnableWebMvc
+@EnableTransactionManagement
+public class MvcConfiguration extends WebMvcConfigurerAdapter {
+
+	@Bean
+	public ViewResolver getViewResolver() {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setViewClass(JstlView.class);
+		resolver.setPrefix("/WEB-INF/views/");
+		resolver.setSuffix(".jsp");
+		return resolver;
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+	}
+
+	@Bean
+	public PropertyPlaceholderConfigurer getPropertyPlaceholderConfigurer() {
+		PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+		ppc.setLocation(new ClassPathResource("application.properties"));
+		ppc.setIgnoreUnresolvablePlaceholders(true);
+		return ppc;
+	}
+
+}

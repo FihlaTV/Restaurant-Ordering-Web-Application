@@ -16,32 +16,34 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
-@Import({ Hibernateconfig.class })
-@ComponentScan(basePackages = "TheApp275Final.term")
-@EnableWebMvc
+@ComponentScan(basePackages="TheApp275Final.term.*")
+@Import({Hibernateconfig.class})
 @EnableTransactionManagement
-public class MvcConfiguration extends WebMvcConfigurerAdapter {
+@EnableWebMvc
+public class MvcConfiguration extends WebMvcConfigurerAdapter{
 
 	@Bean
-	public ViewResolver getViewResolver() {
+	public ViewResolver getViewResolver(){
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 		resolver.setViewClass(JstlView.class);
 		resolver.setPrefix("/WEB-INF/views/");
 		resolver.setSuffix(".jsp");
 		return resolver;
 	}
-
+	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
+	
+	 @Bean
+	    public PropertyPlaceholderConfigurer getPropertyPlaceholderConfigurer()
+	    {
+	        PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+	        ppc.setLocation(new ClassPathResource("application.properties"));
+	        ppc.setIgnoreUnresolvablePlaceholders(true);
+	        return ppc;
+	    }
 
-	@Bean
-	public PropertyPlaceholderConfigurer getPropertyPlaceholderConfigurer() {
-		PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
-		ppc.setLocation(new ClassPathResource("application.properties"));
-		ppc.setIgnoreUnresolvablePlaceholders(true);
-		return ppc;
-	}
-
+	
 }

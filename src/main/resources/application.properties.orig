@@ -1,0 +1,21 @@
+################### JDBC Configuration ##########################
+jdbc.driverClassName=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://cmpe239db.ck5vokjdxtrp.us-west-2.rds.amazonaws.com:3306/theapp
+jdbc.username=root
+jdbc.password=rootroot
+
+################### Hibernate Configuration ##########################
+hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+hibernate.show_sql=true
+hibernate.hbm2ddl.auto=update
+hibernate.generate_statistics=true
+
+<<<<<<< HEAD
+
+################### Item Category List ##########################
+item.category = Drink,Appetizer,Dessert,Main Course
+=======
+################### TheApp Configuration ##########################
+business.start.hour=06:00:00
+business.end.hour=21:00:00
+>>>>>>> 0b8964aa8acc87314af37603f44f3a67a8c96f29

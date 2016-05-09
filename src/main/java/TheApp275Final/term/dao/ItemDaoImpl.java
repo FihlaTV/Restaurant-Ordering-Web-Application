@@ -42,8 +42,9 @@ public class ItemDaoImpl implements ItemDao{
 	
 	@Override
 	public byte[] getImage(int id){
-		return null;
+		String query = "select * from item i where i.id="+id;
+		Item item = (Item)sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Item.class).uniqueResult();
+		return item.getPicture();
 	}
-	
 
 }

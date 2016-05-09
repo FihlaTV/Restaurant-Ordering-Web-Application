@@ -36,7 +36,7 @@ public class ItemServiceImpl implements ItemService{
 	@Override
 	@Transactional
 	public byte[] getImage(int id){
-		return null;
+		return itemDao.getImage(id);
 	}
 
 }

@@ -2,6 +2,12 @@
     <wb-module deploy-name="termproject">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+<<<<<<< HEAD
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+=======
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+>>>>>>> 69db7f62659157dff6a33411f95adae278694bf2
         <property name="context-root" value="term"/>
         <property name="java-output-path" value="/termproject/target/classes"/>
     </wb-module>

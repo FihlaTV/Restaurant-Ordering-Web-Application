@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import TheApp275Final.term.model.Customer;
+import TheApp275Final.term.model.CustomerRole;
 import TheApp275Final.term.services.CustomerService;
  
 @Component
@@ -47,6 +48,9 @@ public class LoginSucessHandler extends SimpleUrlAuthenticationSuccessHandler {
     	session = request.getSession(true);
     	if(username != null && username != ""){
     		customer = customerService.getCustomer(username);
+		   for (CustomerRole temp : customer.getCustomerRoles()) {
+		        System.out.println(temp.getRole());
+		     }
     		session.setAttribute("customer", customer);
     	}
     	session.setMaxInactiveInterval(99999);
@@ -78,7 +82,7 @@ public class LoginSucessHandler extends SimpleUrlAuthenticationSuccessHandler {
         if (isDba(roles)) {
             url = "/db";
         } else if (isAdmin(roles)) {
-            url = "/admin";
+            url = "/admin/getAllItems";
         } else if (isUser(roles)) {
             url = "/user/";
         } else {

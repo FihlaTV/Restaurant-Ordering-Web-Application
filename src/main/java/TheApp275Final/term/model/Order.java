@@ -1,5 +1,6 @@
 package TheApp275Final.term.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,11 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.List;
  
 @Entity
 @Table(name="ORDERS")
@@ -40,6 +43,9 @@ public class Order {
     @ManyToOne
     @JoinColumn(name="PIPELINE_ID")
     private Pipeline pipeline;
+    
+    @OneToMany(mappedBy = "order",cascade={CascadeType.ALL})
+	private List<OrderItems> orderItems;
 
 	public Long getOrderId() {
 		return orderId;
@@ -95,6 +101,14 @@ public class Order {
 
 	public void setPipeline(Pipeline pipeline) {
 		this.pipeline = pipeline;
+	}
+
+	public List<OrderItems> getOrderItems() {
+		return orderItems;
+	}
+
+	public void setOrderItems(List<OrderItems> orderItems) {
+		this.orderItems = orderItems;
 	}
      
  

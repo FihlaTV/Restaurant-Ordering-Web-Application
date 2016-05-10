@@ -1,13 +1,19 @@
 package TheApp275Final.term.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Generated;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -38,6 +44,9 @@ public class Customer implements Serializable{
 	
 	@Column(name="enabled")
 	private boolean enabled;
+	
+	@OneToMany(mappedBy = "customer",cascade={CascadeType.ALL})
+	private List<CustomerRole> customerRoles;
 	
 	public Customer(){}
 
@@ -113,12 +122,19 @@ public class Customer implements Serializable{
 	public void setUserAccessCode(String userAccessCode) {
 		this.userAccessCode = userAccessCode;
 	}
+	
+	public List<CustomerRole> getCustomerRoles() {
+		return customerRoles;
+	}
+	
+	public void setCustomerRoles(List<CustomerRole> customerRoles) {
+		this.customerRoles = customerRoles;
+	}
 
 	@Override
 	public String toString() {
 		return "Customer [Id=" + Id + ", firstname=" + firstname + ", lastname=" + lastname + ", username=" + username
 				+ ", password=" + password + ", userAccessCode=" + userAccessCode + ", enabled=" + enabled + "]";
 	}
-
-
+	
 }

@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,14 @@ public class ItemDaoImpl implements ItemDao{
 		@SuppressWarnings("unchecked")
 		List<Item> result = sessionFactory.getCurrentSession().
 								createCriteria(Item.class).addOrder( Order.asc("category")).list();
+		return result;
+	}
+	
+	@Override
+	public List<Item> getActiveItems() {	
+		@SuppressWarnings("unchecked")
+		List<Item> result = sessionFactory.getCurrentSession().
+								createCriteria(Item.class).add(Restrictions.eq("status", true)).addOrder( Order.asc("category")).list();
 		return result;
 	}
 	

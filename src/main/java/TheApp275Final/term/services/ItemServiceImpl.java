@@ -23,6 +23,12 @@ public class ItemServiceImpl implements ItemService{
 	
 	@Override
 	@Transactional
+	public List<Item> getActiveItems() {
+		return itemDao.getActiveItems();
+	}
+	
+	@Override
+	@Transactional
 	public void deleteItem(Item item) {
 		itemDao.deleteItem(item);
 	}

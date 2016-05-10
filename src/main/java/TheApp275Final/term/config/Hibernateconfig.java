@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import TheApp275Final.term.model.Customer;
+import TheApp275Final.term.model.CustomerRole;
+
 @Configuration
 @EnableTransactionManagement
 public class Hibernateconfig {
@@ -38,7 +41,7 @@ public class Hibernateconfig {
     @Bean()    
     public DataSource getDataSource()
     {
-        DriverManagerDataSource ds = new DriverManagerDataSource();        
+        DriverManagerDataSource ds = new DriverManagerDataSource(); 
         ds.setDriverClassName(driverClassName);
         ds.setUrl(url);
         ds.setUsername(username);

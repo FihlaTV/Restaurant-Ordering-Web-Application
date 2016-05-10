@@ -6,8 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Customer Login Page</title>
 
-<link href="<c:url value='resources/css/loginstyle.css'/>"
-	rel="stylesheet"></link>
+<link href="<c:url value='resources/css/loginstyle.css'/>"	rel="stylesheet"></link>
 <link rel="stylesheet" type="text/css"
 	href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.css" />
 </head>

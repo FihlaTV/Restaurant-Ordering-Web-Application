@@ -18,6 +18,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
+	MyAccessDeniedHandler myAccessDeniedHandler;
+	
+	@Autowired
 	LoginFailureHandler loginFailureHandler;
 	
 	@Autowired
@@ -41,6 +44,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
+		.antMatchers("/resources/css/**").permitAll()
+		.antMatchers("/resources/js/**").permitAll()
+		.antMatchers("/resources/images/**").permitAll()
 		.antMatchers("/user/**").access("hasRole('USER')")//("/", "/user/**")
 		.antMatchers("/admin/**").access("hasRole('ADMIN')")
 		.antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
@@ -54,7 +60,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.csrf()
 		.and()
 			.exceptionHandling()
-			.accessDeniedPage("/Access_Denied")
+			.accessDeniedHandler(myAccessDeniedHandler)
+			//.accessDeniedPage("/Access_Denied")
 		.and()
 			.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)

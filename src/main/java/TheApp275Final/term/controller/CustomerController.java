@@ -1,36 +1,53 @@
 package TheApp275Final.term.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.json.HTTP;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import TheApp275Final.term.model.Customer;
+import TheApp275Final.term.model.Item;
+import TheApp275Final.term.model.Order;
+import TheApp275Final.term.model.OrderItems;
 import TheApp275Final.term.services.CustomerService;
+import TheApp275Final.term.services.ItemService;
+import TheApp275Final.term.services.OrderService;
 
 @Controller
 @RequestMapping(value = "/user/*")
 public class CustomerController {
-	
+
 	@Autowired
 	CustomerService customerService;
 
 	@Autowired
 	private HttpSession httpSession;
 
-/*	@RequestMapping(value = "")
-	public ModelAndView defaultPageNoSlash(HttpServletResponse response) throws IOException {
-		System.out.println("Session in Home" + httpSession.toString());
-		return new ModelAndView("userhome");
-	}*/
+	@Autowired
+	ItemService itemService;
+	
+	@Autowired
+	OrderService orderService;
 
 	@RequestMapping(value = "/")
 	public ModelAndView defaultUserHomePage(HttpServletResponse response) throws IOException {
@@ -41,21 +58,302 @@ public class CustomerController {
 		}
 		System.out.println("Session in Home GET PRINCIPLE" + getPrincipal());
 		Customer customer = customerService.getCustomer(getPrincipal());
-		return new ModelAndView("userhome").addObject("customer",customer);
-	}
-	
-	@RequestMapping(value = "/neworder")
-	public ModelAndView newOrderPage(HttpServletResponse response) throws IOException {
-		Enumeration sessionVariables = httpSession.getAttributeNames();
-		while (sessionVariables.hasMoreElements()) {
-			String param = (String) sessionVariables.nextElement();
-			System.out.println("Session Variables " + param + " and Value == " + httpSession.getAttribute(param));
-		}
-		System.out.println("Session in Home GET PRINCIPLE" + getPrincipal());
-		System.out.println("Session in Home" + httpSession.toString());
-		return new ModelAndView("userhome");
+		return new ModelAndView("userhome").addObject("customer", customer);
 	}
 
+	@RequestMapping(value = "/initializeOrder")
+	public void newOrderPage(HttpServletResponse response) throws IOException {
+
+		// Create An Order and Attach To Session
+		if (httpSession.getAttribute("Order") == null) {
+			Order order = new Order();
+			List<OrderItems> orderItems = new ArrayList<>();
+			order.setOrderItems(orderItems);
+			httpSession.setAttribute("Order", order);
+		}
+
+		// Respond with 200 Message
+		response.setStatus(200);
+		response.setContentType("application/json");
+		JSONObject temp = new JSONObject();
+		response.getWriter().write(temp.toString());
+	}
+
+	@RequestMapping(value = "/cancelOrder")
+	public void cancelOrder(HttpServletResponse response) throws IOException {
+
+		// Create An Order and Attach To Session
+		if (httpSession.getAttribute("Order") != null) {
+			Order order = new Order();
+			List<OrderItems> orderItems = new ArrayList<>();
+			order.setOrderItems(orderItems);
+			httpSession.setAttribute("Order", order);
+		}
+
+		// Respond with 200 Message
+		response.setStatus(200);
+		response.setContentType("application/json");
+		JSONObject temp = new JSONObject();
+		response.getWriter().write(temp.toString());
+	}
+	
+	@RequestMapping(value = "/checkCustomerPickupDateTime")
+	public void checkCustomerPickupDateTime(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		float orderProcessingTime = 0;
+		String pickuptime = request.getParameter("pickuptime");
+		String pickupdate = request.getParameter("pickupdate");
+		
+		System.out.println("pickupdate == " + pickupdate);
+		System.out.println("pickuptime == " + pickuptime);
+		
+		JSONObject respTemp = new JSONObject();
+		
+		// Get the order from the Session
+		Order order = (Order) httpSession.getAttribute("Order");
+
+		if(order == null){
+			// Respond with 404 Message
+			response.setStatus(404);
+			respTemp.put("Error", "Order Not Found");
+		}else{
+			response.setStatus(200);
+			orderProcessingTime = orderService.getProcessingTime(order);
+			respTemp.put("pickupdatetime",true);
+			respTemp.put("estimatedDateTime",new Date().toString());
+			
+		}
+		
+		System.out.println("orderProcessingTime == "  + orderProcessingTime);
+		
+		//Send the Response
+		response.setContentType("application/json");
+		response.getWriter().write(respTemp.toString());
+	}
+
+	@RequestMapping(value = "/getMenuItems", method = RequestMethod.POST)
+	public void getMenuItems(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		JSONArray jsonArray = new JSONArray();
+		List<Item> itemList = itemService.getActiveItems();
+
+		for (Item item : itemList) {
+			JSONObject temp = new JSONObject();
+			temp.put("PreparationTime", item.getPreparationTime());
+			temp.put("Calories", item.getCalories());
+			temp.put("Category", item.getCategory());
+			temp.put("ItemName", item.getItemName());
+			temp.put("UnitPrice", item.getUnitPrice());
+			temp.put("Picture", item.getPicture());
+			temp.put("Quantity", 1);
+			jsonArray.put(temp);
+		}
+		response.setContentType("application/json");
+		response.getWriter().write(jsonArray.toString());
+	}
+
+	@RequestMapping(value = "/getShoppingCart", method = RequestMethod.POST)
+	public void getShoppingCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		JSONArray jsonArray = new JSONArray();
+		Order order = (Order) httpSession.getAttribute("Order");
+		if (order != null) {
+			List<OrderItems> orderItems = order.getOrderItems();
+			if (orderItems != null && orderItems.size() > 0) {
+				for (OrderItems orderItem : orderItems) {
+					JSONObject jsonOrderItem = new JSONObject();
+					jsonOrderItem.put("PreparationTime", orderItem.getPreparationTime());
+					jsonOrderItem.put("Calories", orderItem.getCalories());
+					jsonOrderItem.put("Category", orderItem.getCategory());
+					jsonOrderItem.put("ItemName", orderItem.getItemName());
+					jsonOrderItem.put("UnitPrice", orderItem.getUnitPrice());
+					jsonOrderItem.put("Picture", orderItem.getPicture());
+					jsonOrderItem.put("Quantity", orderItem.getQuantity());
+					jsonArray.put(jsonOrderItem);
+				}
+			}
+		}
+
+		response.setContentType("application/json");
+		response.getWriter().write(jsonArray.toString());
+	}
+
+	@RequestMapping(value = "/deleteLineItem", method = RequestMethod.POST)
+	public void deleteLineItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONArray jsonArray = new JSONArray();
+		Order order = (Order) httpSession.getAttribute("Order");
+		if (order != null) {
+			List<OrderItems> orderItems = order.getOrderItems();
+			if (orderItems != null && orderItems.size() > 0) {
+				Iterator<OrderItems> orditm = orderItems.iterator();
+				while (orditm.hasNext()) {
+					OrderItems s = orditm.next();
+					if (request.getParameter("item[ItemName]").equals(s.getItemName())) {
+						orditm.remove();
+						break;
+					}
+				}
+				for (OrderItems orderItem : orderItems) {
+					JSONObject jsonOrderItem = new JSONObject();
+					jsonOrderItem.put("PreparationTime", orderItem.getPreparationTime());
+					jsonOrderItem.put("Calories", orderItem.getCalories());
+					jsonOrderItem.put("Category", orderItem.getCategory());
+					jsonOrderItem.put("ItemName", orderItem.getItemName());
+					jsonOrderItem.put("UnitPrice", orderItem.getUnitPrice());
+					jsonOrderItem.put("Picture", orderItem.getPicture());
+					jsonOrderItem.put("Quantity", orderItem.getQuantity());
+					jsonArray.put(jsonOrderItem);
+				}
+			}
+			order.setOrderItems(orderItems);
+			httpSession.setAttribute("Order", order);
+		}
+		response.setContentType("application/json");
+		response.getWriter().write(jsonArray.toString());
+	}
+
+	@RequestMapping(value = "/updateItemQuantity", method = RequestMethod.POST)
+	public void updateItemQuantity(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONArray jsonArray = new JSONArray();
+		Order order = (Order) httpSession.getAttribute("Order");
+		if (order != null) {
+			List<OrderItems> orderItems = order.getOrderItems();
+			if (orderItems != null && orderItems.size() > 0) {
+				for (OrderItems orderItem : orderItems) {
+					if (request.getParameter("item[ItemName]").equals(orderItem.getItemName())) {
+						int qty = orderItem.getQuantity();
+						qty++;
+						orderItem.setQuantity(qty);
+					}
+					JSONObject jsonOrderItem = new JSONObject();
+					jsonOrderItem.put("PreparationTime", orderItem.getPreparationTime());
+					jsonOrderItem.put("Calories", orderItem.getCalories());
+					jsonOrderItem.put("Category", orderItem.getCategory());
+					jsonOrderItem.put("ItemName", orderItem.getItemName());
+					jsonOrderItem.put("UnitPrice", orderItem.getUnitPrice());
+					jsonOrderItem.put("Picture", orderItem.getPicture());
+					jsonOrderItem.put("Quantity", orderItem.getQuantity());
+					jsonArray.put(jsonOrderItem);
+				}
+			}
+			httpSession.setAttribute("Order", order);
+		}
+		response.setContentType("application/json");
+		response.getWriter().write(jsonArray.toString());
+	}
+
+	@RequestMapping(value = "/addLineItem", method = RequestMethod.POST)
+	public void addLineItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		JSONArray jsonArray = new JSONArray();
+		Order order = (Order) httpSession.getAttribute("Order");
+		if (order != null) {
+
+			List<OrderItems> orderItems = order.getOrderItems();
+
+			System.out.println("item == > " + request.getParameter("item"));
+
+			JSONObject jsonOrderItm = new JSONObject();
+
+			Enumeration sessionVariables = request.getParameterNames();
+			while (sessionVariables.hasMoreElements()) {
+				String param = (String) sessionVariables.nextElement();
+				System.out.println("Session Variables " + param + " and Value == " + request.getParameter(param));
+				switch (param) {
+
+				case "item[UnitPrice]":
+					jsonOrderItm.put("UnitPrice", request.getParameter(param));
+					break;
+				case "item[Category]":
+					jsonOrderItm.put("Category", request.getParameter(param));
+					break;
+				case "item[Picture][]":
+					/*
+					 * jsonOrderItm.put("Picture", request.getParameter(param));
+					 */
+					break;
+				case "item[ItemName]":
+					jsonOrderItm.put("ItemName", request.getParameter(param));
+					break;
+				case "item[PreparationTime]":
+					jsonOrderItm.put("PreparationTime", request.getParameter(param));
+					break;
+				case "item[Calories]":
+					jsonOrderItm.put("Calories", request.getParameter(param));
+					break;
+
+				case "item[Quantity]":
+					System.out.println(request.getParameter(param) + " Quantity....");
+					int quantity = Integer.valueOf(request.getParameter(param));
+					if (quantity == 0)
+						quantity = 1;
+					jsonOrderItm.put("Quantity", quantity);
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			System.out.println(jsonOrderItm.toString());
+
+			// Check if Item is Existing
+			for (OrderItems orderItem : orderItems) {
+				if (request.getParameter("item[ItemName]").equals(orderItem.getItemName())) {
+					int qty = orderItem.getQuantity();
+					qty++;
+					orderItem.setQuantity(qty);
+					jsonOrderItm = null;
+					order.setOrderItems(orderItems);
+					httpSession.setAttribute("Order", order);
+					break;
+				}
+			}
+
+			if (jsonOrderItm != null && jsonOrderItm.length() > 0) {
+
+				int calories = Integer.valueOf((String) jsonOrderItm.get("Calories"));
+				String category = (String) jsonOrderItm.get("Category");
+				String ItemName = (String) jsonOrderItm.get("ItemName");
+				float unitPrice = Float.parseFloat((String) jsonOrderItm.get("UnitPrice"));
+				/*
+				 * byte[] picture = null; if(jsonOrderItm.get("Picture") !=
+				 * null){ picture = (byte[]) jsonOrderItm.get("Picture"); }
+				 */
+				int preparationTime = Integer.valueOf((String) jsonOrderItm.get("PreparationTime"));
+				int quantity = (int) jsonOrderItm.get("Quantity");
+
+				OrderItems orderitm = new OrderItems();
+				orderitm.setCalories(calories);
+				orderitm.setCategory(category);
+				orderitm.setItemName(ItemName);
+				// orderitm.setPicture(picture);
+				orderitm.setPreparationTime(preparationTime);
+				orderitm.setUnitPrice(unitPrice);
+				orderitm.setQuantity(quantity);
+
+				orderItems.add(orderitm);
+
+				order.setOrderItems(orderItems);
+
+				httpSession.setAttribute("Order", order);
+			}
+
+			if (orderItems != null && orderItems.size() > 0) {
+				for (OrderItems orderItem : orderItems) {
+					JSONObject jsonOrderItem = new JSONObject();
+					jsonOrderItem.put("Calories", orderItem.getCalories());
+					jsonOrderItem.put("Category", orderItem.getCategory());
+					jsonOrderItem.put("ItemName", orderItem.getItemName());
+					jsonOrderItem.put("UnitPrice", orderItem.getUnitPrice());
+					jsonOrderItem.put("Picture", orderItem.getPicture());
+					jsonOrderItem.put("Quantity", orderItem.getQuantity());
+					jsonArray.put(jsonOrderItem);
+				}
+			}
+		}
+		response.setContentType("application/json");
+		response.getWriter().write(jsonArray.toString());
+	}
 
 	private String getPrincipal() {
 		String userName = null;

@@ -9,4 +9,5 @@ public interface ItemDao {
 	public void deleteItem(Item item);
 	public void addItem(Item item);
 	public byte[] getImage(int id);
+	List<Item> getActiveItems();
 }

@@ -36,6 +36,8 @@ public class OrderService implements IOrderService{
 		return orderProcessingTime;
 	}
 	
+<<<<<<< HEAD
+=======
 	public List<Order> getOrderReport(String startTime, String endTime, String sortBy){
 		return orderDao.getOrderReport(startTime, endTime, sortBy);
 	}
@@ -43,5 +45,6 @@ public class OrderService implements IOrderService{
 	public List<OrderItems> getPopularityReport(String startTime, String endTime) {
 		return orderDao.getPopularityReport(startTime, endTime);
 	}
+>>>>>>> 0d155c957584fe65ad13f1cbaa47641ecaa499bb
 
 }

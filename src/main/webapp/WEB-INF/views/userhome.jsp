@@ -85,7 +85,7 @@
 									<h2>{{ key }}</h2>
 									<li class="media" ng-repeat="item in value"><a
 										class="pull-left"><img class="media-object"
-											ng-src="data:image/PNG;base64,{{item.Picture}}" height="64"
+											ng-src="../images/{{item.id}}" height="64"
 											width="64"> </a>
 										<div class="media-body">
 											<h4 class="media-heading">

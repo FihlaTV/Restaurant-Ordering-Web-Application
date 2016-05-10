@@ -28,14 +28,48 @@
 
 <title>Fulfillment Management</title>
 </head>
-<body ng-app="itemApp" ng-controller="itemController" ng-init='items=${items}; categories=${categories}; initToken("${_csrf.parameterName}","${_csrf.token}");'>
+<body ng-app="itemApp" ng-controller="itemController" ng-init='items=${items}; categories=${categories}; initToken("${_csrf.parameterName}","${_csrf.token}");'
+	style="padding-top: 80px;">
+	
+	
+	<header>
+	<div class="navbar navbar-default navbar-fixed-top"
+			style="background: rgba(200, 54, 54, 0.7);">
+			<div class="container" style="background: rgba(255, 255, 255, 0.9);">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target="#navbar-ex-collapse">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand"><span>Food Delivery Service</span></a>
+				</div>
+				<div class="collapse navbar-collapse" id="navbar-ex-collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="active"><a href="<c:url value="/admin/" />">Home</a></li>
+						<li><a href="<c:url value="/logout" />">Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+	</header>
 	
 	<div class="container">
-	<h1>{{dummy}}</h1>
-
-	<input type="button" class="btn btn-success btn-sm pull-right" ng-click="resetOrder()" value="Reset Orders">
+	<ul class="nav nav-tabs nav-justified dropup" style="margin-bottom: 10px"> 
+   		<li><a href="" data-toggle="modal" data-target="#addItemModal" style="background-color:rgba(200, 54, 54, 0.7);color:white; font-weight: bold; margin:5px;">Add Item</a></li>
+   		
+   		<li><a href="<c:url value="/admin/orderReportPage"/>" style="background-color:rgba(200, 54, 54, 0.7);color:white; font-weight:bold; margin:5px;">Order Report</a></li>
+   		
+   		<li><a href="<c:url value="/admin/popularityReportPage"/>" style="background-color:rgba(200, 54, 54, 0.7);color:white; font-weight:bold; margin:5px;">Popularity Report</a></li>
+   		
+   		<li><a href="" ng-click="resetOrder()" style="background-color:rgba(200, 54, 54, 0.7);color:white; font-weight:bold;">Reset Order</a></li>
+   		
+   	</ul>  
+	<!-- <input type="button" class="btn btn-success btn-sm pull-right" ng-click="resetOrder()" value="Reset Orders"> -->
 	
-	<input type="button" class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#addItemModal" value="Add Item">
+	<!-- <input type="button" class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#addItemModal" value="Add Item"> -->
 		<table class="table">
 			<tr>
 				<th>Item Name</th>
@@ -52,7 +86,9 @@
 	        	<td>$ {{item.unitPrice}}</td>
 	        	<td>{{item.preparationTime}} minutes</td>
 	        	<td>{{item.calories}}</td>
-	        	<td><img alt="{{item.itemName}}" ng-src="../images/{{item.id}}" style="width:128px;height:128px;"></td>
+	        	<td>
+	        		<img alt="{{item.itemName}}" ng-src="../images/{{item.id}}" style="width:128px;height:128px;">	        		
+	        	</td>
 	        	<td>
 	        		<input ng-show="item.status"  type="button" class="btn btn-sm btn-block" value="Edit" ng-click="editClicked(item)" data-toggle="modal" data-target="#addItemModal" >
 	        		<input ng-show="!item.status" disabled type="button" class="btn btn-sm btn-block" value="Deleted">
@@ -70,7 +106,7 @@
 			  <div class="modal-dialog" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header" style="background-color:#3B5998; color: white;">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white" ng-click="newItem=null;edit=false;"><span aria-hidden="true">&times;</span></button>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white" ng-click="newItem=null;edit=false;picture=null;"><span aria-hidden="true">&times;</span></button>
 			        <h4 class="modal-title" id="myModalLabel"> {{edit?'Edit':'Add'}} Item</h4>
 			      </div>
 			      <form ng-submit="addItem(newItem)" class="form-group" >
@@ -107,8 +143,8 @@
 			      </table>			      	        
 			      </div>
 			      <div class="modal-footer">
-			        <input type="button" class="btn btn-sm btn-default pull-right" data-dismiss="modal" value="Cancel" ng-click="newItem=null;edit=false;">
-			        <button type="submit" class="btn btn-sm btn-default pull-right" style="background-color:#3B5998; border: 1; color: white; margin-right:10px" value="Add" >Add</button>
+			        <input type="button" class="btn btn-sm btn-default pull-right" data-dismiss="modal" value="Cancel" ng-click="newItem=null;edit=false;picture=null;">
+			        <button type="submit" class="btn btn-sm btn-default pull-right" style="background-color:#3B5998; border: 1; color: white; margin-right:10px" value="Add" >{{edit?'Edit':'Add'}}</button>
 			      </div>
 			      </form>
 			    </div>

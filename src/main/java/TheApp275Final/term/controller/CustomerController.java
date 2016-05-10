@@ -43,6 +43,7 @@ import TheApp275Final.term.model.Pipeline1;
 import TheApp275Final.term.model.Pipeline2;
 import TheApp275Final.term.model.Pipeline3;
 import TheApp275Final.term.services.CustomerService;
+import TheApp275Final.term.services.IOrderService;
 import TheApp275Final.term.services.ItemService;
 import TheApp275Final.term.services.OrderSchedulingService;
 import TheApp275Final.term.services.OrderService;
@@ -62,7 +63,7 @@ public class CustomerController {
 	ItemService itemService;
 
 	@Autowired
-	OrderService orderService;
+	IOrderService orderService;
 
 	@Autowired
 	OrderSchedulingService orderSchedulingService;

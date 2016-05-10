@@ -1,6 +1,7 @@
 package TheApp275Final.term.services;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
 
@@ -11,5 +12,6 @@ public interface OrderSchedulingService {
 
 	public void testInputdata();
 	public boolean checkPickUpTime(String pickUpTime);
-	public OrderTimes findEmptyPipeline(Date pickupDate,String pickupTime, int mins);
+	public HashMap<Integer, OrderTimes> getEarliestTimeSlots(Date pickupDate,String pickupTime, int mins);
+	public HashMap<Integer,OrderTimes> checkFeasibiltyOfPickUpTIme(Date pickupDate,String pickupTime,int mins);
 }

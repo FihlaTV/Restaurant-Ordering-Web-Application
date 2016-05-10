@@ -5,6 +5,11 @@ import java.time.LocalTime;
 
 public class OrderTimes {
 	
+	@Override
+	public String toString() {
+		return "OrderTimes [orderStartTime=" + orderStartTime + ", OrderEndTime=" + OrderEndTime + "]";
+	}
+
 	private LocalTime orderStartTime;
 	public LocalTime getOrderStartTime() {
 		return orderStartTime;

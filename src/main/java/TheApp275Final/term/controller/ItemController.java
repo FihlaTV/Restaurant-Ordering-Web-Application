@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 //import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,9 +33,10 @@ public class ItemController {
 	@Value("#{'${item.category}'.split(',')}")
 	private List<String> category;
 	
+	
 	@RequestMapping(value="/admin/getAllItems")
 	public ModelAndView getAllItems(HttpServletResponse response, Model model) throws IOException{
-		response.setContentType("undefined");
+		response.setContentType("application/json");
 		List<Item> itemList = itemService.getAllItems();
 		for(int i=0;i<itemList.size();i++){
 			itemList.get(i).setPicture(null);
@@ -63,20 +65,14 @@ public class ItemController {
 	
 	@RequestMapping(value="/admin/addItem", method = RequestMethod.POST)
 	public ModelAndView addItem(HttpServletRequest request, 
-			@ModelAttribute(value = "item") String itemJson 
-//			@ModelAttribute(value = "file") MultipartFile file
-			) throws IOException{
-		System.out.println("In addItem");
-
-//		File uploadFile = new File(System.getProperty("catalina.base")+"/images/"+file.getOriginalFilename());
-//		BufferedOutputStream stream = new BufferedOutputStream(
-//                new FileOutputStream(uploadFile));
-//        stream.write(file.getBytes());
-//        stream.close();
-		
+			@ModelAttribute(value = "item") String itemJson, 
+			@ModelAttribute(value = "file") MultipartFile file) throws IOException{
 		Gson gson = new Gson();
 		Item item = gson.fromJson(itemJson, Item.class);
-//		item.setPicture(file.getBytes());
+		if(file.getBytes()!=null&&file.getBytes().length>0){
+			item.setPicture(file.getBytes());
+		}
+		
 		itemService.addItem(item);
 		return new ModelAndView("items");
 	}

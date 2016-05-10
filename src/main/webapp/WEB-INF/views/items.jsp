@@ -1,4 +1,7 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -25,7 +28,7 @@
 
 <title>Fulfillment Management</title>
 </head>
-<body ng-app="itemApp" ng-controller="itemController" ng-init='items=${items}; categories=${categories};'>
+<body ng-app="itemApp" ng-controller="itemController" ng-init='items=${items}; categories=${categories}; initToken("${_csrf.parameterName}","${_csrf.token}");'>
 	
 	<div class="container">
 	<h1>{{dummy}}</h1>
@@ -49,7 +52,7 @@
 	        	<td>$ {{item.unitPrice}}</td>
 	        	<td>{{item.preparationTime}} minutes</td>
 	        	<td>{{item.calories}}</td>
-	        	<td>Image</td>
+	        	<td><img alt="{{item.itemName}}" ng-src="../images/{{item.id}}" style="width:128px;height:128px;"></td>
 	        	<td>
 	        		<input ng-show="item.status"  type="button" class="btn btn-sm btn-block" value="Edit" ng-click="editClicked(item)" data-toggle="modal" data-target="#addItemModal" >
 	        		<input ng-show="!item.status" disabled type="button" class="btn btn-sm btn-block" value="Deleted">
@@ -99,7 +102,7 @@
 			      	</tr>
 			      	<tr>
 			      		<th>Image</th>
-			      		<th><input  type="file" class="form-control" name="picture" ng-model="picture" file-model="picture" ></th>
+			      		<th><input  required type="file" class="form-control" name="picture" ng-model="picture" file-model="picture" ></th>
 			      	</tr>
 			      </table>			      	        
 			      </div>

@@ -8,12 +8,39 @@ import java.util.List;
 
 import TheApp275Final.term.dto.OrderTimes;
 import TheApp275Final.term.model.Order;
+import TheApp275Final.term.model.Pipeline;
+import TheApp275Final.term.model.Pipeline1;
+import TheApp275Final.term.model.Pipeline2;
+import TheApp275Final.term.model.Pipeline3;
 
 public class TheAppUtility {
 
 	public static LocalTime convertStringToLocalTime(String time){
 		LocalTime localTime = LocalTime.parse(time);
 		return localTime;
+	}
+	
+	public static Pipeline getPipeline(int number){
+		Pipeline pipeline=null;
+		
+		switch (number) {
+		case 1:
+			pipeline = new Pipeline1();
+			break;
+
+		case 2:
+			pipeline = new Pipeline2();
+			break;
+
+		case 3:
+			pipeline = new Pipeline3();
+			break;
+
+		default:
+			break;
+		}	
+		
+		return pipeline;
 	}
 	
 	public static HashMap<Integer,ArrayList<OrderTimes>> convertListToMap(List<Order> orderList){

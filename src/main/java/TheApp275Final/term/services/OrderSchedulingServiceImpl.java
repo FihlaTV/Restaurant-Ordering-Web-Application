@@ -109,6 +109,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	@Override
 	public boolean checkPickUpTime(String pickUpTime) {
 		LocalTime time = TheAppUtility.convertStringToLocalTime(pickUpTime);
+		System.out.println("pick up time is "+time.toString());
 		LocalTime startTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 		LocalTime endTime = TheAppUtility.convertStringToLocalTime(businessEndTime);
 		if (time.isAfter(startTime) && time.isBefore(endTime)) {
@@ -166,7 +167,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	}
 
 	@Override
-	public HashMap<Integer, OrderTimes> getEarliestTimeSlots(Date pickupDate, String pickupTime, int mins) {
+	public HashMap<Integer, OrderTimes> getEarliestTimeSlots(Date pickupDate, int mins) {
 		HashMap<Integer, OrderTimes> orderStartEndTimeMap = new HashMap<>();
 		LocalTime startTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 		LocalTime endTime = TheAppUtility.convertStringToLocalTime(businessEndTime);
@@ -206,9 +207,8 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			for (int key : mapFinal.keySet()) {
 				System.out.println(key + "=======" + mapFinal.get(key).toString());
 			}
-
+            return mapFinal;
 		}
-		return null;
 	}
 
 	private void addBoundaryConditions(HashMap<Integer, ArrayList<OrderTimes>> orderTimesMap, LocalTime lowerLimit,
@@ -288,5 +288,10 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			System.out.println("upperLimitTime " + upperLimitTime);
 		}
 
+	}
+
+	@Override
+	public boolean saveOrder(Order order) {
+		return orderSchedulingDao.saveOrder(order, order.getPipeline());
 	}
 }

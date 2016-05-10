@@ -11,19 +11,17 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 	$scope.cartItems = [];
 	$scope.order = {};
 	$scope.order.submit = false;
-	$scope.order.pickupdateSet = true;
+	$scope.order.pickupdateSet = false;
 	$scope.order.buttonText = "Get Earliest Pickup Time";
 	
 	$scope.changePickupDate = function(){
-		console.log("Changed Pickup Date!!" + document.getElementById("pickupdate").value);
+		console.log("Changed Pickup Date!!" + $scope.order.pickupdate);
 		if($scope.order.pickupdate == "" || $scope.order.pickupdate == undefined){
 			console.log("Date Null");
 			$scope.order.pickupdateSet = true;
-			//$scope.order.pickupdate = "";
 		}else{
 			console.log("Date present" + $scope.order.pickupdate );
 			$scope.order.pickupdateSet = false;
-			//$scope.order.pickupdate = document.getElementById("pickupdate").value;
 			$scope.order.submit = false;
 		}
 	}
@@ -32,21 +30,19 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 		console.log("Changed Pickup Time!!" + $scope.order.pickuptime);
 		if($scope.order.pickuptime == "" || $scope.order.pickuptime == undefined){
 			$scope.order.buttonText = "Get Earliest Pickup Time";
-			//	$scope.order.pickuptime = "";
 			$scope.order.submit = false;
 		}else{
-			$scope.order.buttonText = "Check Pickup Date Availability";
-			//$scope.order.pickuptime = document.getElementById("pickuptime").value;
+			$scope.order.buttonText = "Check Pickup Time Availability";
 			$scope.order.submit = false;	
 		}
 	}
 	
 	$scope.validatePickupDate = function(){
 		console.log("validatePickupDate!!");
-		if(document.getElementById("pickupdate").value == "" || document.getElementById("pickupdate").value == undefined){
+	/*	if(document.getElementById("pickupdate").value == "" || document.getElementById("pickupdate").value == undefined){
 			alert("Please Enter the Pick Up Date for Your Order!!!");
-		}else{
-			if(document.getElementById("pickuptime").value != "" && document.getElementById("pickuptime").value != undefined){
+		}else{*/
+			if($scope.order.pickuptime != "" && $scope.order.pickuptime != undefined){
 				//Check if the Estimated Pickup time is Feasible as Pick up Time.
 				var xsrf = $.param({
 					_csrf : $scope.csrfToken.token,
@@ -71,7 +67,9 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 						$scope.order.errorMessage = "There was Slight Problem in Placing Your Order," +
 								" Your food won't be ready for Pickup at the time you have mentioned." +
 								" For the Date <b>" + $scope.order.pickupdate + "</b>," +
-								" We estimated that the <b>Earliest Time<b> we can prepare your Order and Keep it Ready for pickup is." + data.estimatedDateTime;
+								" We estimated that the <b>Earliest Time<b> we can prepare your Order and Keep it Ready for pickup on ";
+						
+						$scope.order.estimatedDateTime = data.estimatedDateTime;	
 					}
 					console.log("checkCustomerPickupDate!!");
 				}).error(function(data, status, headers, config) {
@@ -81,9 +79,36 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 			}else{
 				//Get the Earliest Available Pickup Time
 				console.log("Get the Earliest Available Pickup Time");
+				var xsrf = $.param({
+					_csrf : $scope.csrfToken.token,
+					pickuptime:$scope.order.pickuptime,
+					pickupdate:$scope.order.pickupdate
+				});
+				$http({
+					method : 'POST',
+					url : './estimatePickupDataTime',
+					data : xsrf,
+					headers : {
+						'Content-Type' : 'application/x-www-form-urlencoded'
+					},
+					withCredentials : true
+				}).success(function(data, status, headers, config) {
+					console.log(data);
+					if(!data.pickupdatetime){
+						$scope.order.submit = true;
+						$scope.order.error = true;
+						$scope.order.errorMessage =  "We estimated that the Earliest Time We can prepare your Order and Keep it Ready for pickup is ";
+						$scope.order.estimatedDateTime = data.estimatedDateTime;	
+					}
+					console.log("checkCustomerPickupDate!!");
+				}).error(function(data, status, headers, config) {
+					console.log("checkCustomerPickupDate:: " + data);
+					$scope.order.error = true;
+					$scope.order.errorMessage =  "There was an Error Processing Your Order, Please Try again....";
+					$scope.order.submit = false;
+				});
 			}
-		}
-		
+		/*}*/
 	}
 	
 	$scope.submitOrder = function(){

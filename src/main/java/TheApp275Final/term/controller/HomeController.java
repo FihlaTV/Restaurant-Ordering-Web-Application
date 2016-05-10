@@ -29,7 +29,7 @@ public class HomeController {
 		return new ModelAndView("home");
 	}
 
-	@RequestMapping(value = "/postData", method = RequestMethod.POST)
+	/*@RequestMapping(value = "/postData", method = RequestMethod.POST)
 	public ModelAndView mockController(
 			@RequestParam(value = "pickup_date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date pickupDate,
 			@RequestParam(value = "tot_proc_time", required = false) int mins, HttpServletResponse response,
@@ -41,12 +41,12 @@ public class HomeController {
 		if (orderSchedulingService.checkPickUpTime(pickupTime)) {
 			orderSchedulingService.testInputdata();
 			orderSchedulingService.findEmptyPipeline(pickupDate, pickupTime, mins);
-			/**
+			*//**
 			 * calculate preparation start and end time check if any pipeline is
 			 * empty to fullfill the order if not - tell user to choose
 			 * alternate pick up time
 			 * 
-			 */
+			 *//*
 
 		} else {
 			// Go to choose Alternate Pick up time
@@ -54,7 +54,7 @@ public class HomeController {
 		ModelAndView mv = new ModelAndView("home2", map);
 		return mv;
 
-	}
+	}*/
 
 	private String getPrincipal() {
 		String userName = null;

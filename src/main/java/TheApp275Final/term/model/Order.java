@@ -36,8 +36,18 @@ public class Order {
      
     @Column(name="ORDER_END_TIME")
     private LocalDateTime orderEndTime;
- 
-    @Column(name="STATUS")
+    
+	
+
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", totalProcTime=" + totalProcTime + ", pickUpTime=" + pickUpTime
+				+ ", orderStartTime=" + orderStartTime + ", orderEndTime=" + orderEndTime + ", status=" + status
+				+ ", pipeline=" + pipeline + ", orderItems=" + orderItems ;
+	}
+
+
+	@Column(name="STATUS")
     private char status;
     
     @ManyToOne

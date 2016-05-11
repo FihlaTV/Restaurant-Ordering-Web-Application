@@ -103,8 +103,21 @@ itemApp.controller('itemController', function($scope,$http) {
 	
 	$scope.resetOrder = function(){
 		
-		console.log("In reset");
-		//To implement reset order
+		if(confirm("Do you want to reset all orders?")){
+			$http({
+				url:'./resetOrders',
+				method:'POST',
+				transformRequest: angular.identity,
+				headers: { 'Content-Type': undefined,
+			        'X-CSRF-Token': $scope.csrfToken.token
+			    },
+				withCredentials : true
+			}).success(function(data){
+				console.log("resetOrders success");
+			}).error(function(data){
+				console.log("resetOrdersError");
+			});
+		};
 	}
 })
 .directive('fileModel', ['$parse', function ($parse) {

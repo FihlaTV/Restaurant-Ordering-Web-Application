@@ -22,12 +22,9 @@ import TheApp275Final.term.model.Pipeline;
 @Transactional
 public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 	@Autowired
-	private SessionFactory sessionFactory;
+	private Session session;
 
-	public OrderSchedulingDaoImpl(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
+	
 	public OrderSchedulingDaoImpl() {
 		super();
 	}
@@ -35,7 +32,6 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 	@Override
 	@Transactional
 	public boolean saveOrder(Order order, Pipeline pipe) {
-		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		session.save(pipe);
 		order.setPipeline(pipe);
@@ -46,7 +42,6 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 
 	@Override
 	public List<Order> getListOfOrders(Date pickupDate) {
-		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
@@ -62,9 +57,7 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 			if (tx != null)
 				tx.rollback();
 			e.printStackTrace();
-		} finally {
-			session.close();
-		}
+		} 
 		return null;
 	}
 

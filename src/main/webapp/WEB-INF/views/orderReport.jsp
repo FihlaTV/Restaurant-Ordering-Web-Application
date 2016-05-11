@@ -92,11 +92,11 @@
 		</tr>
 		<tr ng-repeat="order in orders">
 		<td>{{order.id}}</td>
-		<td>{{order.total}}</td>
-		<td>{{order.orderStartTime}}</td>
-		<td>{{order.orderEndTime}}</td>
-		<td>{{order.pickUpTime}}</td>
-		<td>{{order.orderTime}}</td>
+		<td>$ {{order.total}}</td>
+		<td>{{order.orderStartTime | datetime}}</td>
+		<td>{{order.orderEndTime| datetime}}</td>
+		<td>{{order.pickUpTime| datetime}}</td>
+		<td>{{order.orderTime| datetime}}</td>
 		<td>{{order.status}}</td>
 		<td>{{order.username}}</td>
 		<td>

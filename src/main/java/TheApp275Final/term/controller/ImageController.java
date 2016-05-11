@@ -32,6 +32,7 @@ public class ImageController {
 			o.close();
 		}
 		//return new ModelAndView("items");
+//		return new ModelAndView("items");
 	}
 	
 }

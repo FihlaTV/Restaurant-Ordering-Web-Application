@@ -8,11 +8,6 @@ orderReportApp.controller('orderReportController', function($scope,$http) {
 		$scope.orders = {};
 		$scope.csrfToken.name = name;
 		$scope.csrfToken.token = token;
-		$scope.fromDate = "2016-01-01";
-		$scope.toDate = "2016-12-12";
-		$scope.fromTime = "00:00";
-		$scope.toTime = "00:00";
-		//$scope.getAllItems();
 	}
 
 	$scope.getData = function(){
@@ -20,7 +15,7 @@ orderReportApp.controller('orderReportController', function($scope,$http) {
 		var fromTime = new Date($scope.fromDate+" "+$scope.fromTime+":00");
 		var toTime = new Date($scope.toDate+" "+$scope.toTime+":00");
 		 if(fromTime>toTime/*&&toTime>new Date()*/){
-		 	alert("Error");
+		 	alert("Start time cannot be more than End Time");
 		 } else {
 			 var start = $scope.fromDate+" "+$scope.fromTime+":00";
 			 var end = $scope.toDate+" "+$scope.toTime+":00";		
@@ -48,3 +43,17 @@ orderReportApp.controller('orderReportController', function($scope,$http) {
 
 	}
 });
+
+angular.module('orderReportPageApp').filter('datetime', function($filter)
+		{
+		 return function(input)
+		 {
+		  if(input == null){ return ""; } 
+		 
+		  var _date = $filter('date')(new Date(input),
+		                              'HH:mm a MMM dd yyyy');
+		 
+		  return _date.toUpperCase();
+
+		 };
+		});

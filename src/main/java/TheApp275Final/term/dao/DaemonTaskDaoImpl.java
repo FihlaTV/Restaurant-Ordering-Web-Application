@@ -26,6 +26,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 	@Override
 	@Transactional
 	public void updateStatusToP() {
+		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to p");
 		String sql = "UPDATE ORDERS SET STATUS='P' WHERE STATUS='N'"
@@ -35,12 +36,14 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		query.addEntity(Order.class);		
 		query.executeUpdate();
 		tx.commit();
+		session.flush();
 		System.out.println("Updated status to P");
 	}
 
 	@Override
 	@Transactional
 	public void updateStatusToR() {
+		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to r");
 		String sql = "UPDATE ORDERS SET STATUS='R' WHERE STATUS IN ('N','P')"
@@ -51,11 +54,13 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		query.executeUpdate();
 		tx.commit();
 		System.out.println("Updated status to R");
+		session.flush();
 	}
 
 	@Override
 	@Transactional
 	public void updateStatusToF() {
+		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to f");
 		String sql = "UPDATE ORDERS SET STATUS='F' WHERE STATUS IN ('N','P','R') "
@@ -66,6 +71,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		query.executeUpdate();
 		tx.commit();
 		System.out.println("Updated status to F");
+		session.flush();
 	}
 
 }

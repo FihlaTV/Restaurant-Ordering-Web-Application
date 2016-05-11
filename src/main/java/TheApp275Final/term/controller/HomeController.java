@@ -40,7 +40,7 @@ public class HomeController {
 		map.addAttribute("mins", mins);
 		if (orderSchedulingService.checkPickUpTime(pickupTime)) {
 			orderSchedulingService.testInputdata();
-			orderSchedulingService.findEmptyPipeline(pickupDate, pickupTime, mins);
+			//orderSchedulingService.findEmptyPipeline(pickupDate, pickupTime, mins);
 			/**
 			 * calculate preparation start and end time check if any pipeline is
 			 * empty to fullfill the order if not - tell user to choose

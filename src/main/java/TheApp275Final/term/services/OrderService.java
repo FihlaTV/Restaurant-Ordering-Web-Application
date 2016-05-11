@@ -42,5 +42,9 @@ public class OrderService implements IOrderService{
 	public List<OrderItems> getPopularityReport(String startTime, String endTime) {
 		return orderDao.getPopularityReport(startTime, endTime);
 	}
+	
+	public void resetOrders(){
+		orderDao.resetOrders();
+	}
 
 }

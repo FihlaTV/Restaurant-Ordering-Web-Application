@@ -20,7 +20,7 @@ public class OrderDaoImpl implements OrderDao {
 	
 	@Override
 	public List<Order> getOrderReport(String startTime, String endTime, String sortBy){
-		String query = "select * from ORDERS where ORDER_PLACEMENT_TIME between '"+startTime+"' and '"+endTime+"' order by '"+sortBy+"'";
+		String query = "select * from ORDERS where ORDER_PLACEMENT_TIME between '"+startTime+"' and '"+endTime+"' and status != 'C' order by '"+sortBy+"'";
 		@SuppressWarnings("unchecked")
 		List<Order> orders = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Order.class).list();
 		return orders;
@@ -30,12 +30,23 @@ public class OrderDaoImpl implements OrderDao {
 	public List<OrderItems> getPopularityReport(String startTime, String endTime) {
 		
 		String query = "select oi.* from ORDERS_ITEMS oi inner join ORDERS o where o.ORDER_ID=oi.ORDER_ID " 
-						+ "and o.ORDER_PLACEMENT_TIME between '"+startTime+"' and '"+endTime+"' "
+						+ "and o.ORDER_PLACEMENT_TIME between '"+startTime+"' and '"+endTime+"' and o.status != 'C'"
 					    + "order by oi.category, oi.item_name";
 		@SuppressWarnings("unchecked")
 		List<OrderItems> result = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(OrderItems.class).list();
 		return result;
 		
 	}
+	
+	@Override
+	public void resetOrders() {
+		
+		String query = "update ORDERS set status = 'C'";					
+		@SuppressWarnings("unchecked")
+		int temp = sessionFactory.getCurrentSession().createSQLQuery(query).executeUpdate();
+		
+	}
+	
+	
 
 }

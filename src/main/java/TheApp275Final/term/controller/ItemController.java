@@ -93,6 +93,11 @@ public class ItemController {
 		response.getWriter().write(Long.toString(item.getId()));
 	}
 	
+	@RequestMapping(value="/admin/resetOrders", method = RequestMethod.POST)
+	public void resetOrders(HttpServletResponse response) throws IOException{
+		orderService.resetOrders();
+	}
+	
 	@RequestMapping(value={"/admin/orderReportPage"})
 	public ModelAndView getOrderReportPage(Model model) throws IOException{
 		return new ModelAndView("orderReport");
@@ -112,7 +117,11 @@ public class ItemController {
 		String sortBy = request.getParameter("sortBy");
 		LocalDateTime startTime = LocalDateTime.parse(request.getParameter("fromDate").toString(),formatter);
 		LocalDateTime endTime = LocalDateTime.parse(request.getParameter("toDate").toString(),formatter);
-		
+		HashMap<Character, String> status = new HashMap<Character, String> ();
+		status.put('N', "New");
+		status.put('R', "Ready");
+		status.put('P', "Processing");
+		status.put('F', "Fulfilled");
 		List<Order> orders = orderService.getOrderReport(request.getParameter("fromDate"),request.getParameter("toDate"),sortBy);
 		float total = 0;
 		
@@ -123,7 +132,7 @@ public class ItemController {
 			temp.put("id", order.getOrderId());
 			temp.put("orderStartTime",order.getOrderStartTime());
 			temp.put("orderEndTime",order.getOrderEndTime());
-			temp.put("status",order.getStatus());
+			temp.put("status",status.get(order.getStatus()));
 			temp.put("pickUpTime",order.getPickUpTime());
 			temp.put("orderTime", order.getOrderPlacementTime());
 			temp.put("username", order.getCustomer().getUsername());

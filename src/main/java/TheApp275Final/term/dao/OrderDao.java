@@ -11,5 +11,6 @@ public interface OrderDao {
 	
 	public List<Order> getOrderReport(String startTime, String endTime, String sortBy);
 	public List<OrderItems> getPopularityReport(String startTime, String endTime);
+	public void resetOrders();
 
 }

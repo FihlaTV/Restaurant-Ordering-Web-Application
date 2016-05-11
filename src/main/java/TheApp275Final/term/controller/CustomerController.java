@@ -30,6 +30,7 @@ import TheApp275Final.term.model.Item;
 import TheApp275Final.term.model.Order;
 import TheApp275Final.term.model.OrderItems;
 import TheApp275Final.term.services.CustomerService;
+import TheApp275Final.term.services.IOrderService;
 import TheApp275Final.term.services.ItemService;
 import TheApp275Final.term.services.OrderService;
 
@@ -47,7 +48,7 @@ public class CustomerController {
 	ItemService itemService;
 	
 	@Autowired
-	OrderService orderService;
+	IOrderService orderService;
 
 	@RequestMapping(value = "/")
 	public ModelAndView defaultUserHomePage(HttpServletResponse response) throws IOException {

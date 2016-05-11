@@ -3,6 +3,7 @@ package TheApp275Final.term.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,10 +42,17 @@ public class Order {
     private char status;
     
     @ManyToOne
+    @JoinColumn(name="ORDER_USER_ID")
+    private Customer customer;
+    
+    @ManyToOne
     @JoinColumn(name="PIPELINE_ID")
     private Pipeline pipeline;
     
-    @OneToMany(mappedBy = "order",cascade={CascadeType.ALL})
+    @Column(name = "ORDER_PLACEMENT_TIME", insertable = false, updatable = false)
+    private LocalDateTime orderPlacementTime; 
+    
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order",cascade={CascadeType.ALL})
 	private List<OrderItems> orderItems;
 
 	public Long getOrderId() {
@@ -111,6 +119,21 @@ public class Order {
 		this.orderItems = orderItems;
 	}
      
+	public void setOrderPlacementTime(LocalDateTime orderPlacementTime){
+		this.orderPlacementTime = orderPlacementTime;
+	}
+	
+	public LocalDateTime getOrderPlacementTime(){
+		return orderPlacementTime;
+	}
+	
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
  
     // Getter and Setter methods
 }

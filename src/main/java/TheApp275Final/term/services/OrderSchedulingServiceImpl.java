@@ -110,7 +110,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 		System.out.println("pick up time is " + time.toString());
 		LocalTime startTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 		LocalTime endTime = TheAppUtility.convertStringToLocalTime(businessEndTime);
-		if (time.isAfter(startTime) || time.equals(startTime) && time.isBefore(endTime) || time.equals(endTime)) {
+		if ((time.isAfter(startTime) || time.equals(startTime)) && (time.isBefore(endTime) || time.equals(endTime))) {
 			System.out.println("perfect it is");
 			return true;
 		}

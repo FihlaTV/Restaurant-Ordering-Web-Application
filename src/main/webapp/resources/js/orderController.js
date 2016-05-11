@@ -11,19 +11,17 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 	$scope.cartItems = [];
 	$scope.order = {};
 	$scope.order.submit = false;
-	$scope.order.pickupdateSet = true;
+	$scope.order.pickupdateSet = false;
 	$scope.order.buttonText = "Get Earliest Pickup Time";
 	
 	$scope.changePickupDate = function(){
-		console.log("Changed Pickup Date!!" + document.getElementById("pickupdate").value);
+		console.log("Changed Pickup Date!!" + $scope.order.pickupdate);
 		if($scope.order.pickupdate == "" || $scope.order.pickupdate == undefined){
 			console.log("Date Null");
 			$scope.order.pickupdateSet = true;
-			//$scope.order.pickupdate = "";
 		}else{
 			console.log("Date present" + $scope.order.pickupdate );
 			$scope.order.pickupdateSet = false;
-			//$scope.order.pickupdate = document.getElementById("pickupdate").value;
 			$scope.order.submit = false;
 		}
 	}
@@ -32,21 +30,21 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 		console.log("Changed Pickup Time!!" + $scope.order.pickuptime);
 		if($scope.order.pickuptime == "" || $scope.order.pickuptime == undefined){
 			$scope.order.buttonText = "Get Earliest Pickup Time";
-			//	$scope.order.pickuptime = "";
 			$scope.order.submit = false;
 		}else{
-			$scope.order.buttonText = "Check Pickup Date Availability";
-			//$scope.order.pickuptime = document.getElementById("pickuptime").value;
+			$scope.order.buttonText = "Check Pickup Time Availability";
 			$scope.order.submit = false;	
 		}
 	}
 	
 	$scope.validatePickupDate = function(){
+		
+		//Reset the Error Message
+		$scope.order.error = false;
+		
 		console.log("validatePickupDate!!");
-		if(document.getElementById("pickupdate").value == "" || document.getElementById("pickupdate").value == undefined){
-			alert("Please Enter the Pick Up Date for Your Order!!!");
-		}else{
-			if(document.getElementById("pickuptime").value != "" && document.getElementById("pickuptime").value != undefined){
+			if($scope.order.pickuptime != "" && $scope.order.pickuptime != undefined){
+				
 				//Check if the Estimated Pickup time is Feasible as Pick up Time.
 				var xsrf = $.param({
 					_csrf : $scope.csrfToken.token,
@@ -64,34 +62,80 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 				}).success(function(data, status, headers, config) {
 					console.log(data);
 					if(data.pickupdatetime){
-						$scope.order.submit = true;	
+						$scope.order.submit = true;
+						$scope.order.error = true;
+						if($scope.order.pickuptime != data.estimatedDateTime){
+							$scope.order.errorMessage = "There was Slight Problem in Placing Your Order," +
+							" Your food won't be ready for Pickup at the time you have mentioned." +
+							" For the Date " + $scope.order.pickupdate + "," +
+							" We estimated that the Earliest Time we can prepare your Order and Keep it Ready for pickup on " + data.estimatedDateTime;
+							$scope.order.estimatedDateTime = data.estimatedDateTime;
+							$scope.order.pickuptime = data.estimatedDateTime;
+						}else{
+							$scope.order.errorMessage = "Great News!! We can Process your Order and keep it read for you to pick up at your Preferred Time Slot on "
+								+ $scope.order.pickupdate + " at " + $scope.order.pickuptime;
+						}		
 					}else{
 						$scope.order.submit = false;
 						$scope.order.error = true;
-						$scope.order.errorMessage = "There was Slight Problem in Placing Your Order," +
-								" Your food won't be ready for Pickup at the time you have mentioned." +
-								" For the Date <b>" + $scope.order.pickupdate + "</b>," +
-								" We estimated that the <b>Earliest Time<b> we can prepare your Order and Keep it Ready for pickup is." + data.estimatedDateTime;
+						$scope.order.errorMessage =  "We are Sorry, There are no Pickup Slots avaiable to Fulfill your Order on " + $scope.order.pickupdate + "!! Please Revise Your Order to reduce the Items or Change Your Order Pickup  Date to Proceed";
+						$scope.order.estimatedDateTime = "";
+						$scope.order.pickuptime = data.estimatedDateTime;
+						$scope.order.estimatedDateTime = data.estimatedDateTime;	
 					}
 					console.log("checkCustomerPickupDate!!");
 				}).error(function(data, status, headers, config) {
 					console.log("checkCustomerPickupDate:: " + data);
+					$scope.order.error = true;
+					$scope.order.errorMessage =  "There was an Error Processing Your Order, Please Try again....";
 					$scope.order.submit = false;
 				});
 			}else{
 				//Get the Earliest Available Pickup Time
 				console.log("Get the Earliest Available Pickup Time");
+				var xsrf = $.param({
+					_csrf : $scope.csrfToken.token,
+					pickuptime:$scope.order.pickuptime,
+					pickupdate:$scope.order.pickupdate
+				});
+				$http({
+					method : 'POST',
+					url : './estimatePickupDataTime',
+					data : xsrf,
+					headers : {
+						'Content-Type' : 'application/x-www-form-urlencoded'
+					},
+					withCredentials : true
+				}).success(function(data, status, headers, config) {
+					console.log(data);
+					if(data.pickupdatetime){
+						$scope.order.submit = true;
+						$scope.order.error = true;
+						$scope.order.errorMessage =  "We estimated that the Earliest Time We can prepare your Order and Keep it Ready for pickup is " + data.estimatedDateTime;
+						$scope.order.estimatedDateTime = data.estimatedDateTime;
+						$scope.order.pickuptime = data.estimatedDateTime;
+					}else{
+						$scope.order.submit = false;
+						$scope.order.error = true;
+						$scope.order.errorMessage =  "We are Sorry, There are no Pickup Slots avaiable to Fulfill your Order on " + $scope.order.pickupdate + "!! Please Revise Your Order to reduce the Items or Change Your Order Pickup  Date to Proceed";
+						$scope.order.estimatedDateTime = "";
+					}
+					console.log("checkCustomerPickupDate!!");
+				}).error(function(data, status, headers, config) {
+					console.log("checkCustomerPickupDate:: " + data);
+					$scope.order.error = true;
+					$scope.order.errorMessage =  "There was an Error Processing Your Order, Please Try again....";
+					$scope.order.submit = false;
+					$scope.order.estimatedDateTime = "";
+				});
 			}
-		}
-		
 	}
 	
 	$scope.submitOrder = function(){
 		console.log("submitOrder!!");
 		if($scope.order.pickupdate == document.getElementById("pickupdate").value){
 			var xsrf = $.param({
-				_csrf : $scope.csrfToken.token,
-				item:item
+				_csrf : $scope.csrfToken.token
 			});
 			$http({
 				method : 'POST',
@@ -133,6 +177,7 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 			}).success(function(data, status, headers, config) {
 				console.log(data);
 				$scope.cartItems = data;
+				$scope.order.submit = false;
 				console.log("Menu Item Removed to Cart!!");
 			}).error(function(data, status, headers, config) {
 				console.log("Error Removed Menu Items :: " + data); 	
@@ -160,6 +205,7 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 			}).success(function(data, status, headers, config) {
 				console.log(data);
 				$scope.cartItems = [];
+				$scope.order.submit = false;
 				console.log("Menu Item Added to Cart!!");
 			}).error(function(data, status, headers, config) {
 				console.log("Error Added Menu Items :: " + data);
@@ -186,6 +232,7 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 		}).success(function(data, status, headers, config) {
 			console.log(data);
 			$scope.cartItems = data;
+			$scope.order.submit = false;
 			console.log("Menu Item Added to Cart!!");
 		}).error(function(data, status, headers, config) {
 			console.log("Error Added Menu Items :: " + data);
@@ -210,6 +257,7 @@ FoodOrderApp.controller('OrderController', function($scope, $http) {
 		}).success(function(data, status, headers, config) {
 			console.log(data);
 			$scope.cartItems = data;
+			$scope.order.submit = false;
 			console.log("Menu Item Added to Cart!!");
 		}).error(function(data, status, headers, config) {
 			console.log("Error Added Menu Items :: " + data);

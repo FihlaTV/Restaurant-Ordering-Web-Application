@@ -37,6 +37,11 @@ public class Pipeline {
 		this.pipelineNo = pipelineNo;
 	}
 
+	@Override
+	public String toString() {
+		return "Pipeline [pipelineId=" + pipelineId + ", pipelineNo=" + pipelineNo + "]";
+	}
+
 	public Long getPipelineId() {
 		return pipelineId;
 	}

@@ -31,8 +31,7 @@ public class ImageController {
 			o.flush();
 			o.close();
 		}
-		
-		
+		//return new ModelAndView("items");
 //		return new ModelAndView("items");
 	}
 	

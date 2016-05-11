@@ -31,14 +31,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-
 		auth.jdbcAuthentication().dataSource(dataSource)
 		.usersByUsernameQuery("select username,password, enabled from users where username=?")
 		.authoritiesByUsernameQuery("select username, role from user_roles where username=?");
-
-		/*auth.inMemoryAuthentication().withUser("bill").password("abc123").roles("USER");
-		auth.inMemoryAuthentication().withUser("admin").password("root123").roles("ADMIN");
-		auth.inMemoryAuthentication().withUser("dba").password("root123").roles("ADMIN", "DBA");*/
 	}
 
 	@Override
@@ -47,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.antMatchers("/resources/css/**").permitAll()
 		.antMatchers("/resources/js/**").permitAll()
 		.antMatchers("/resources/images/**").permitAll()
+		.antMatchers("/images/**").permitAll()
 		.antMatchers("/user/**").access("hasRole('USER')")//("/", "/user/**")
 		.antMatchers("/admin/**").access("hasRole('ADMIN')")
 		.antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")

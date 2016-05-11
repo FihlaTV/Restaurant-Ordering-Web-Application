@@ -37,13 +37,21 @@ public class Order {
      
     @Column(name="ORDER_END_TIME")
     private LocalDateTime orderEndTime;
- 
-    @Column(name="STATUS")
+    
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", totalProcTime=" + totalProcTime + ", pickUpTime=" + pickUpTime
+				+ ", orderStartTime=" + orderStartTime + ", orderEndTime=" + orderEndTime + ", status=" + status
+				+ ", pipeline=" + pipeline + ", orderItems=" + orderItems ;
+	}
+
+
+	@Column(name="STATUS")
     private char status;
     
     @ManyToOne
     @JoinColumn(name="ORDER_USER_ID")
-    private Customer customer;
+    private Customer customers;
     
     @ManyToOne
     @JoinColumn(name="PIPELINE_ID")
@@ -128,11 +136,11 @@ public class Order {
 	}
 	
 	public Customer getCustomer() {
-		return customer;
+		return customers;
 	}
 
 	public void setCustomer(Customer customer) {
-		this.customer = customer;
+		this.customers = customer;
 	}
  
     // Getter and Setter methods

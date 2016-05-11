@@ -1,6 +1,11 @@
 package TheApp275Final.term.dao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,6 +18,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import TheApp275Final.term.model.Customer;
+import TheApp275Final.term.model.Item;
+import TheApp275Final.term.model.Order;
 
 @Repository
 @Transactional
@@ -80,6 +87,28 @@ public class CustomerDao implements ICustomerDao {
 	@Override
 	public boolean deleteProfile(int id) {
 		return false;
+	}
+
+	@Override
+	public List<Order> getListOfOrder(int id) {
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			String sql = "SELECT * FROM ORDERS where ORDER_USER_ID= :order_user_id";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.addEntity(Order.class);
+			query.setParameter("order_user_id", id);
+			List OrderList = query.list();
+			tx.commit();
+			return OrderList;
+		} catch (HibernateException e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return null;
 	}
 
 }

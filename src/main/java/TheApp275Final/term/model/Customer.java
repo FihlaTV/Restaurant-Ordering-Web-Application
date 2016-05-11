@@ -46,7 +46,7 @@ public class Customer implements Serializable{
 	@Column(name="enabled")
 	private boolean enabled;
 	
-	@OneToMany(mappedBy="customer", cascade={CascadeType.ALL})
+	@OneToMany(mappedBy="customers", cascade={CascadeType.ALL})
 	private List<Order> orders;
 	
 	@OneToMany(mappedBy="customer", cascade={CascadeType.ALL})

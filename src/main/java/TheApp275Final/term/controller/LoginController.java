@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,6 +39,9 @@ public class LoginController {
 
 	@Autowired
 	LoginServices loginServices;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@RequestMapping(value = "/login")
 	public ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -45,7 +49,7 @@ public class LoginController {
 		if (principal == null) {
 			return new ModelAndView("login");
 		} else {
-			response.sendRedirect("user/");
+			response.sendRedirect("admin/");
 			return null;
 		}
 	}
@@ -86,7 +90,7 @@ public class LoginController {
 		System.out.println("userAccessCode ==> " + userAccessCode);
 
 		// Create a New Customer Object
-		Customer customer = new Customer(firstname, lastname, username, password, userAccessCode);
+		Customer customer = new Customer(firstname, lastname, username, passwordEncoder.encode(password), userAccessCode);
 
 		// Create and Associate a User Role
 		CustomerRole customerRole = new CustomerRole();

@@ -329,10 +329,10 @@ public class CustomerController {
 		response.getWriter().write(respTemp.toString());
 	}
 
-	@RequestMapping(value = "/getMenuItems", method = RequestMethod.POST)
+	@RequestMapping(value = "git ", method = RequestMethod.POST)
 	public void getMenuItems(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
-		//System.out.println(httpSession.getAttribute(name));
+		System.out.println("Customer from Session ==> " + httpSession.getAttribute("customer").toString());
 
 		JSONArray jsonArray = new JSONArray();
 		List<Item> itemList = itemService.getActiveItems();
@@ -356,11 +356,13 @@ public class CustomerController {
 	@RequestMapping(value = "/submitOrder", method = RequestMethod.POST)
 	public void submitOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
+		Customer customer = (Customer) httpSession.getAttribute("customer");
+		
 		// Get the order from the Session
 		Order order = (Order) httpSession.getAttribute("Order");
 		
 		// Setting the user id in order object
-		order.setCustomer(((Customer)(SecurityContextHolder.getContext().getAuthentication())));
+		order.setCustomer(customer);
 		
 		//This will return true after the saving the order
 		orderSchedulingService.saveOrder(order);

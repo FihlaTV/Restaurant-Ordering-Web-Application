@@ -331,7 +331,7 @@ public class CustomerController {
 		response.getWriter().write(respTemp.toString());
 	}
 
-	@RequestMapping(value = "git ", method = RequestMethod.POST)
+	@RequestMapping(value = "getMenuItems", method = RequestMethod.POST)
 	public void getMenuItems(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		System.out.println("Customer from Session ==> " + httpSession.getAttribute("customer").toString());

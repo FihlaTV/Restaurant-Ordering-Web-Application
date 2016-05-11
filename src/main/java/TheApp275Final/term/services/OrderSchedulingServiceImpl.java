@@ -1,7 +1,9 @@
 package TheApp275Final.term.services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -42,7 +44,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	@Override
 	@Transactional
 	public void testInputdata() {
-		for (int i = 0; i < 10;i=i+2) {
+		for (int i = 0; i < 10; i = i + 2) {
 			Order order1 = new Order();
 			Pipeline pipe = new Pipeline1();
 			order1.setStatus('N');
@@ -53,7 +55,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			order1.setTotalProcTime(10);
 			orderSchedulingDao.saveOrder(order1, pipe);
 		}
-		for (int i = 0; i < 10;i=i+2) {
+		for (int i = 0; i < 10; i = i + 2) {
 			Order order1 = new Order();
 			Pipeline pipe = new Pipeline2();
 			order1.setStatus('N');
@@ -65,7 +67,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			orderSchedulingDao.saveOrder(order1, pipe);
 		}
 
-		for (int i = 0; i < 10;i=i+2) {
+		for (int i = 0; i < 10; i = i + 2) {
 			Order order1 = new Order();
 			Pipeline pipe = new Pipeline3();
 			order1.setStatus('N');
@@ -86,33 +88,29 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 		 * order1.setPipeline(pipe); order1.setTotalProcTime(40);
 		 * orderSchedulingDao.saveOrder(order1, pipe);
 		 */
-		/*Order order2 = new Order();
-		Pipeline pipe1 = new Pipeline2();
-		order2.setStatus('N');
-		order2.setOrderEndTime(LocalDateTime.of(2016, 5, 8, 05, 00));
-		order2.setOrderStartTime(LocalDateTime.of(2016, 5, 8, 04, 20));
-		order2.setPickUpTime(LocalDateTime.of(2016, 5, 8, 06, 00));
-		// order1.setPipeline(pipe);
-		order2.setTotalProcTime(40);
-		orderSchedulingDao.saveOrder(order2, pipe1);
-		Order order3 = new Order();
-		Pipeline pipe2 = new Pipeline3();
-		order3.setStatus('N');
-		order3.setOrderEndTime(LocalDateTime.of(2016, 5, 8, 05, 00));
-		order3.setOrderStartTime(LocalDateTime.of(2016, 5, 8, 04, 20));
-		order3.setPickUpTime(LocalDateTime.of(2016, 5, 8, 06, 00));
-		// order1.setPipeline(pipe);
-		order3.setTotalProcTime(40);
-		orderSchedulingDao.saveOrder(order3, pipe2);*/
+		/*
+		 * Order order2 = new Order(); Pipeline pipe1 = new Pipeline2();
+		 * order2.setStatus('N'); order2.setOrderEndTime(LocalDateTime.of(2016,
+		 * 5, 8, 05, 00)); order2.setOrderStartTime(LocalDateTime.of(2016, 5, 8,
+		 * 04, 20)); order2.setPickUpTime(LocalDateTime.of(2016, 5, 8, 06, 00));
+		 * // order1.setPipeline(pipe); order2.setTotalProcTime(40);
+		 * orderSchedulingDao.saveOrder(order2, pipe1); Order order3 = new
+		 * Order(); Pipeline pipe2 = new Pipeline3(); order3.setStatus('N');
+		 * order3.setOrderEndTime(LocalDateTime.of(2016, 5, 8, 05, 00));
+		 * order3.setOrderStartTime(LocalDateTime.of(2016, 5, 8, 04, 20));
+		 * order3.setPickUpTime(LocalDateTime.of(2016, 5, 8, 06, 00)); //
+		 * order1.setPipeline(pipe); order3.setTotalProcTime(40);
+		 * orderSchedulingDao.saveOrder(order3, pipe2);
+		 */
 	}
 
 	@Override
 	public boolean checkPickUpTime(String pickUpTime) {
 		LocalTime time = TheAppUtility.convertStringToLocalTime(pickUpTime);
-		System.out.println("pick up time is "+time.toString());
+		System.out.println("pick up time is " + time.toString());
 		LocalTime startTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 		LocalTime endTime = TheAppUtility.convertStringToLocalTime(businessEndTime);
-		if (time.isAfter(startTime) && time.isBefore(endTime)) {
+		if (time.isAfter(startTime) || time.equals(startTime) && time.isBefore(endTime) || time.equals(endTime)) {
 			System.out.println("perfect it is");
 			return true;
 		}
@@ -168,6 +166,15 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 
 	@Override
 	public HashMap<Integer, OrderTimes> getEarliestTimeSlots(Date pickupDate, int mins) {
+		LocalTime startTimeNow;
+		if(!checkPickUpDate(pickupDate)){
+			return null;
+		}
+		if (pickupDate.after(new Date())) {
+			startTimeNow = LocalTime.MIDNIGHT;
+		} else {
+			startTimeNow = LocalTime.now();
+		}
 		HashMap<Integer, OrderTimes> orderStartEndTimeMap = new HashMap<>();
 		LocalTime startTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 		LocalTime endTime = TheAppUtility.convertStringToLocalTime(businessEndTime);
@@ -182,13 +189,13 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 		int emptyPipelineNumber = checkEmptyPipelines(orderTimesMap);
 		System.out.println("emptyPipelineNumber " + emptyPipelineNumber);
 		if (emptyPipelineNumber != 0) {
-			if (checkPickUpTime(LocalTime.now().plusMinutes(mins).toString())) {
-				orderStartEndTime = new OrderTimes(LocalTime.now(), LocalTime.now().plusMinutes(mins));
+			if (checkPickUpTime(startTimeNow.plusMinutes(mins).toString())) {
+				orderStartEndTime = new OrderTimes(startTimeNow, startTimeNow.plusMinutes(mins));
 				orderStartEndTimeMap.put(emptyPipelineNumber, orderStartEndTime);
 				System.out.println(orderStartEndTimeMap.get(emptyPipelineNumber).toString());
 				return orderStartEndTimeMap;
 			} else {
-				if (LocalTime.now().plusMinutes(mins).isBefore(startTime)) {
+				if (startTimeNow.plusMinutes(mins).isBefore(startTime)) {
 					orderStartEndTime = new OrderTimes(startTime.minusMinutes(mins), startTime);
 					orderStartEndTimeMap.put(emptyPipelineNumber, orderStartEndTime);
 					System.out.println(orderStartEndTimeMap.get(emptyPipelineNumber).toString());
@@ -200,14 +207,14 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			}
 		} else {
 			LocalTime upperLimit = endTime;
-			LocalTime lowerLimit = (LocalTime.now().isBefore(startTime)) ? startTime.minusMinutes(60).minusMinutes(mins)
-					: LocalTime.now();
+			LocalTime lowerLimit = (startTimeNow.isBefore(startTime)) ? startTime.minusMinutes(60).minusMinutes(mins)
+					: startTimeNow;
 			addBoundaryConditions(orderTimesMap, lowerLimit, upperLimit);
 			HashMap<Integer, OrderTimes> mapFinal = getFeasibleOrderTimes(orderTimesMap, upperLimit, lowerLimit, mins);
 			for (int key : mapFinal.keySet()) {
 				System.out.println(key + "=======" + mapFinal.get(key).toString());
 			}
-            return mapFinal;
+			return mapFinal;
 		}
 	}
 
@@ -249,14 +256,18 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 				return m1.getOrderStartTime().compareTo(m2.getOrderStartTime());
 			}
 		});
+		if(!checkPickUpDate(pickupDate)){
+			return null;
+		}
 		if (checkPickUpTime(pickupTime)) {
-			if (LocalTime.now().plusMinutes(mins).isBefore(pickupTimeObj)
+			if (pickupDate.after(new Date()) || LocalTime.now().plusMinutes(mins).isBefore(pickupTimeObj)
 					|| LocalTime.now().plusMinutes(mins).equals(pickupTimeObj)) {
 				int emptyPipelineNumber = checkEmptyPipelines(orderTimesMap);
 				if (emptyPipelineNumber != 0) {
 					orderStartEndTime = new OrderTimes(pickupTimeObj.minusMinutes(mins), pickupTimeObj);
 					orderStartEndTimeMap.put(emptyPipelineNumber, orderStartEndTime);
-					System.out.println("Pipe Number "+emptyPipelineNumber+" "+orderStartEndTimeMap.get(emptyPipelineNumber).toString());
+					System.out.println("Pipe Number " + emptyPipelineNumber + " "
+							+ orderStartEndTimeMap.get(emptyPipelineNumber).toString());
 					return orderStartEndTimeMap;
 				} else {
 					LocalTime upperLimitTime = pickupTimeObj.minusMinutes(mins);
@@ -293,5 +304,16 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	@Override
 	public boolean saveOrder(Order order) {
 		return orderSchedulingDao.saveOrder(order, order.getPipeline());
+	}
+
+	@Override
+	public boolean checkPickUpDate(Date pickUpDate) {
+		LocalDate pickUpDateOnly = LocalDateTime.ofInstant(pickUpDate.toInstant(), ZoneId.systemDefault()).toLocalDate();
+		if(pickUpDateOnly.equals(LocalDate.now()) || (pickUpDateOnly.isAfter(LocalDate.now()) && pickUpDateOnly.isBefore(LocalDate.now().plusDays(29)))){
+			System.out.println("date is valid");
+			return true;
+		}
+		System.out.println("date is invalid");
+		return false;
 	}
 }

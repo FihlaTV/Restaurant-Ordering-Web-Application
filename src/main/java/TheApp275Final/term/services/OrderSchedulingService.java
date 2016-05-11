@@ -14,6 +14,7 @@ public interface OrderSchedulingService {
 	public void testInputdata();
 	public boolean saveOrder(Order order);
 	public boolean checkPickUpTime(String pickUpTime);
+	public boolean checkPickUpDate(Date pickUpDate);
 	public HashMap<Integer, OrderTimes> getEarliestTimeSlots(Date pickupDate,int mins);
 	public HashMap<Integer,OrderTimes> checkFeasibiltyOfPickUpTIme(Date pickupDate,String pickupTime,int mins);
 }

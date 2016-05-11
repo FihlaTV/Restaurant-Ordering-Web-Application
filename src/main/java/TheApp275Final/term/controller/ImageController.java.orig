@@ -1,0 +1,43 @@
+package TheApp275Final.term.controller;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import TheApp275Final.term.services.ItemService;
+
+@Controller
+public class ImageController {
+
+	@Autowired
+	ItemService itemService;
+	
+	@RequestMapping(value="/images/{itemId}", method = RequestMethod.GET)
+	public void addItem(HttpServletResponse response, @PathVariable("itemId") int itemId) throws IOException{
+		
+		byte[] imageBytes = itemService.getImage(itemId);
+		if(imageBytes!=null&&imageBytes.length>0){
+			response.setContentType("image/gif");
+			OutputStream o = response.getOutputStream();
+			o.write(imageBytes);
+			o.flush();
+			o.close();
+		}
+<<<<<<< HEAD
+		
+		
+//		return new ModelAndView("items");
+=======
+		//return new ModelAndView("items");
+>>>>>>> d13eaba323a51c47992a0e60aa27d1f7bfe1baf0
+	}
+	
+}

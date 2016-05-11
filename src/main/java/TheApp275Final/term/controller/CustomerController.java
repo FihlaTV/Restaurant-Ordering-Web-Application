@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -43,6 +44,9 @@ import TheApp275Final.term.utility.TheAppUtility;
 @Controller
 @RequestMapping(value = "/user/*")
 public class CustomerController {
+	
+	@Value("${business.start.hour}")
+	private String businessStartTime;
 
 	@Autowired
 	CustomerService customerService;
@@ -236,6 +240,8 @@ public class CustomerController {
 			} else {
 				System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
 				slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
+				LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
+				LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);
 				if(slots != null){
 					LocalTime minLocalTime = LocalTime.of(23, 59);
 					int minKey = 0;
@@ -247,6 +253,9 @@ public class CustomerController {
 							minLocalTime=entry.getValue().getOrderStartTime();
 						}
 					}
+					if(!slots.get(minKey).getOrderEndTime().isBefore(busPickUpStartTime)){
+						PickUpTime=slots.get(minKey).getOrderEndTime();
+					}
 					Pipeline pipeline = TheAppUtility.getPipeline(minKey);
 			        
 					order.setPipeline(pipeline);
@@ -254,7 +263,7 @@ public class CustomerController {
 					LocalTime endTime = slots.get(minKey).getOrderEndTime();
 					order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
 					order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
+					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),PickUpTime));
 					System.out.println(order.toString());
 					
 					//Set Response
@@ -317,7 +326,8 @@ public class CustomerController {
 			
 			LocalTime minLocalTime = LocalTime.of(23, 59);
 			int minKey = -1;
-			
+			LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
+			LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);
 			if(slots != null){
 				for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
 					System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
@@ -326,6 +336,9 @@ public class CustomerController {
 						minKey=entry.getKey();
 						minLocalTime=entry.getValue().getOrderStartTime();
 					}
+				}
+				if(!slots.get(minKey).getOrderEndTime().isBefore(busPickUpStartTime)){
+					PickUpTime=slots.get(minKey).getOrderEndTime();
 				}
 			}
 			
@@ -337,12 +350,12 @@ public class CustomerController {
 				LocalTime endTime = slots.get(minKey).getOrderEndTime();
 				order.setOrderStartTime(LocalDateTime.of(LocalDate.now(),startTime));
 				order.setOrderEndTime(LocalDateTime.of(LocalDate.now(),endTime));
-				order.setPickUpTime(LocalDateTime.of(LocalDate.now(),endTime));
+				order.setPickUpTime(LocalDateTime.of(LocalDate.now(),PickUpTime));
 				
 				System.out.println(order.toString());
 				
 				//Set Response
-				String estimatedPickUpDateTime =  endTime.toString();//.substring(0, endTime.toString().indexOf("."));
+				String estimatedPickUpDateTime =  PickUpTime.toString();//.substring(0, endTime.toString().indexOf("."));
 				
 				System.out.println(estimatedPickUpDateTime);
 				

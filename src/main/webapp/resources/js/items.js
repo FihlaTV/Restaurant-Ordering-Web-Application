@@ -13,6 +13,10 @@ itemApp.controller('itemController', function($scope,$http) {
 		
 	}
 	
+	$scope.fileUploaded = function(){
+		console.log("File changed");
+	}
+	
 	$scope.deleteItem = function(item){
 		console.log("In deleted Item");
 		item.status=false;
@@ -58,42 +62,49 @@ itemApp.controller('itemController', function($scope,$http) {
 	$scope.addItem = function(item){
 		console.log("In add"+item.category);
 		item.status=true;
-		console.log("File: "+$scope.picture);
-		console.log("File: "+JSON.stringify(item));
-		var fd = new FormData();
-		fd.append('item',JSON.stringify(item));
-		fd.append('file',$scope.picture);
+		var validFileFormat = ["image/gif", "image/jpeg", "image/png"];
+		if(validFileFormat.indexOf($scope.picture.type)==-1){
+			alert("Incorrect file format for image");
+		} else {
+			console.log("File: "+$scope.picture.name);
+			console.log("File: "+$scope.picture.type);
+			console.log("File: "+JSON.stringify(item));
+			var fd = new FormData();
+			fd.append('item',JSON.stringify(item));
+			fd.append('file',$scope.picture);
+			
+			var xsrf = $.param({
+				_csrf : $scope.csrfToken.token,
+				item: JSON.stringify(item),
+				file: JSON.stringify($scope.picture)
+			});
+			
+			$http({
+				url:'./addItem',
+				method:'POST',
+				data: fd,
+				transformRequest: angular.identity,
+				headers: { 'Content-Type': undefined,
+			        'X-CSRF-Token': $scope.csrfToken.token
+			    },
+				withCredentials : true
+			}).success(function(data){
+				console.log("addItem success");
+				if(!$scope.edit){
+					item.id=data;
+					$scope.items.push(item);
+				} else {
+					item.id=item.id;
+					$scope.edit = false;
+				}		
+				$scope.picture = null;
+				$scope.newItem=null;
+				$('#addItemModal').modal('hide');
+			}).error(function(data){
+				console.log("addItem Error");
+			});
+		}
 		
-		var xsrf = $.param({
-			_csrf : $scope.csrfToken.token,
-			item: JSON.stringify(item),
-			file: JSON.stringify($scope.picture)
-		});
-		
-		$http({
-			url:'./addItem',
-			method:'POST',
-			data: fd,
-			transformRequest: angular.identity,
-			headers: { 'Content-Type': undefined,
-		        'X-CSRF-Token': $scope.csrfToken.token
-		    },
-			withCredentials : true
-		}).success(function(data){
-			console.log("addItem success");
-			if(!$scope.edit){
-				item.id=data;
-				$scope.items.push(item);
-			} else {
-				item.id=item.id;
-				$scope.edit = false;
-			}		
-			$scope.picture = null;
-			$scope.newItem=null;
-			$('#addItemModal').modal('hide');
-		}).error(function(data){
-			console.log("addItem Error");
-		});
 	}
 	
 	$scope.editClicked = function(item){

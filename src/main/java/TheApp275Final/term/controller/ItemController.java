@@ -3,10 +3,12 @@ package TheApp275Final.term.controller;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -171,8 +173,10 @@ public class ItemController {
 			if(!map.get(item.getCategory()).containsKey(item.getItemName())){
 				map.get(item.getCategory()).put(item.getItemName(),0);
 			}
-			map.get(item.getCategory()).put(item.getItemName(),map.get(item.getCategory()).get(item.getItemName())+1);			
+			map.get(item.getCategory()).put(item.getItemName(),map.get(item.getCategory()).get(item.getItemName())+item.getQuantity());			
 		}
+		
+		
 		JSONArray jsonArray = new JSONArray();
 		Iterator<Entry<String,HashMap<String,Integer>>> it = map.entrySet().iterator();
 		while(it.hasNext()){
@@ -180,9 +184,14 @@ public class ItemController {
 			JSONObject temp = new JSONObject();
 			temp.put("category", entry.getKey());
 			JSONArray arr = new JSONArray();
-			Iterator<Entry<String,Integer>> it2 = entry.getValue().entrySet().iterator();
+			
+			MyComparator comp = new MyComparator(entry.getValue());
+			Map<String, Integer> newMap = new TreeMap(comp);
+			newMap.putAll(entry.getValue());
+			
+			Iterator<Entry<String,Integer>> it2 = newMap.entrySet().iterator();
 			while(it2.hasNext()){
-				Map.Entry<String, Integer> entry2 = it2.next();
+				Map.Entry<String,Integer> entry2 = it2.next();
 				JSONObject temp2 = new JSONObject();
 				temp2.put("itemName", entry2.getKey());
 				temp2.put("count", entry2.getValue());
@@ -191,9 +200,18 @@ public class ItemController {
 			temp.put("items", arr);
 			jsonArray.put(temp);
 		}
-		
-		System.out.println(" SD: "+startTime.toString()+" ED:"+endTime.toString()+" "+jsonArray.toString());
 		response.getWriter().write(jsonArray.toString());
 	}
 	
+}
+
+@SuppressWarnings("rawtypes")
+class MyComparator implements Comparator {
+    Map map;
+    public MyComparator(Map map) {
+        this.map = map;
+    }
+    public int compare(Object o1, Object o2) {
+        return ((Integer) map.get(o2)).compareTo((Integer) map.get(o1));
+    }
 }

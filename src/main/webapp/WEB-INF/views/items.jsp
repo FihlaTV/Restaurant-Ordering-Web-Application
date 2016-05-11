@@ -138,7 +138,7 @@
 			      	</tr>
 			      	<tr>
 			      		<th>Image</th>
-			      		<th><input  required type="file" class="form-control" name="picture" ng-model="picture" file-model="picture" ></th>
+			      		<th><input  required type="file" class="form-control" name="picture" ng-model="picture" file-model="picture" ng-change="fileUploaded()" ></th>
 			      	</tr>
 			      </table>			      	        
 			      </div>

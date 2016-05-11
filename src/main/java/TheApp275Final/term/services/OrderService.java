@@ -13,7 +13,7 @@ import TheApp275Final.term.model.Order;
 import TheApp275Final.term.model.OrderItems;
 
 @Service("orderService")
-@Transactional(isolation=Isolation.REPEATABLE_READ,transactionManager="transactionManager")
+@Transactional(isolation=Isolation.DEFAULT,transactionManager="transactionManager")
 public class OrderService implements IOrderService{
 	
 	@Autowired
@@ -49,7 +49,6 @@ public class OrderService implements IOrderService{
 	}
 	
 	@Override
-	@Transactional
 	public void cancelOrder(int orderId) {
 		orderDao.cancelOrder(orderId);
 	}

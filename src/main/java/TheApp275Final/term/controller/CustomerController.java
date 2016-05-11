@@ -89,6 +89,7 @@ public class CustomerController {
 		// Create An Order and Attach To Session
 		if (httpSession.getAttribute("Order") == null) {
 			Order order = new Order();
+			order.setStatus('N');
 			order.setOrderPlacementTime(LocalDateTime.now());
 			List<OrderItems> orderItems = new ArrayList<>();
 			order.setOrderItems(orderItems);
@@ -104,14 +105,22 @@ public class CustomerController {
 	
 	@RequestMapping(value = "/cancelSubmittedOrder")
 	public void cancelSubmittedOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		int orderId = Integer.valueOf(request.getParameter("orderid"));
+		
+		System.out.println("cancelSubmittedOrder ==> " + request.getParameter("orderid"));
+		
 		try{
-			orderService.cancelOrder(orderId);
+			int orderId = Integer.valueOf(request.getParameter("orderid"));
+			if(orderId > 0){
+				response.setStatus(200);
+				orderService.cancelOrder(orderId);
+			}else{
+				response.setStatus(404);
+			}
 		}catch(Exception e){
-			
+			e.printStackTrace();
+			response.setStatus(404);	
 		}
 		// Respond with 200 Message
-		response.setStatus(200);
 		response.setContentType("application/json");
 		JSONObject temp = new JSONObject();
 		response.getWriter().write(temp.toString());
@@ -396,6 +405,7 @@ public class CustomerController {
 
 			for (Order order : OrderHistory) {
 				
+				System.out.println(order.getOrderId() + " ; "+ order.getStatus());
 				float totalPrice = 0;
 				JSONObject temp = new JSONObject();
 				List<OrderItems> orderItems = order.getOrderItems();
@@ -425,6 +435,7 @@ public class CustomerController {
 			// Get the order from the Session
 			Order order = (Order) httpSession.getAttribute("Order");
 
+			//Set the order Status
 			order.setStatus('N');
 
 			// Setting the user id in order object
@@ -438,7 +449,7 @@ public class CustomerController {
 				Order newOrder = new Order();
 				List<OrderItems> orderItems = new ArrayList<>();
 				newOrder.setOrderItems(orderItems);
-				httpSession.setAttribute("Order", newOrder);
+				httpSession.setAttribute("Order", null);
 			}
 			return new ModelAndView("OrderSummary","order",order);
 		} catch (Exception e) {

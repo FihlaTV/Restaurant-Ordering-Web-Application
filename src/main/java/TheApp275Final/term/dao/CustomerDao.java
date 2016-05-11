@@ -93,13 +93,15 @@ public class CustomerDao implements ICustomerDao {
 	public List<Order> getListOfOrder(long id) {
 		Transaction tx = null;
 		try {
-			tx = session.beginTransaction();
+			session.clear();
+			//tx = session.beginTransaction();
 			String sql = "SELECT * FROM ORDERS where ORDER_USER_ID= :order_user_id";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.addEntity(Order.class);
 			query.setParameter("order_user_id", id);
 			List OrderList = query.list();
-			tx.commit();
+			//sessiontx.commit();
+			session.flush();
 			return OrderList;
 		} catch (HibernateException e) {
 			if (tx != null)

@@ -2,9 +2,12 @@ package TheApp275Final.term.dao;
 
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import TheApp275Final.term.model.Order;
@@ -17,6 +20,9 @@ public class OrderDaoImpl implements OrderDao {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	Session session;
 	
 	@Override
 	public List<Order> getOrderReport(String startTime, String endTime, String sortBy){
@@ -46,8 +52,10 @@ public class OrderDaoImpl implements OrderDao {
 	
 	@Override
 	public void cancelOrder(int orderId) {
+		session.clear();
 		String query = "update ORDERS set status = 'C' where ORDER_ID = " + orderId;
-		int temp = sessionFactory.getCurrentSession().createSQLQuery(query).executeUpdate();
+		int temp = session.createSQLQuery(query).executeUpdate();
+		session.flush();
 	}
 
 }

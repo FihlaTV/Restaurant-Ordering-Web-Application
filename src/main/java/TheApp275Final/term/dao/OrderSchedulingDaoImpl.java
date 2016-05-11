@@ -44,6 +44,7 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 	public List<Order> getListOfOrders(Date pickupDate) {
 		Transaction tx = null;
 		try {
+			session.clear();
 			tx = session.beginTransaction();
 			String sql = "SELECT * FROM ORDERS where date(pickup_time)= :pickup_date";
 			SQLQuery query = session.createSQLQuery(sql);
@@ -52,6 +53,7 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 			query.setParameter("pickup_date", formatter.format(pickupDate));
 			List Order = query.list();
 			tx.commit();
+			session.flush();
 			return Order;
 		} catch (HibernateException e) {
 			if (tx != null)

@@ -108,11 +108,11 @@
 									</div>
 									<div class="col-md-4">
 									<div class="row">
-									<div class="col-md-12"><span style="font-size: x-large;;">
+									<div class="col-md-12"><span style="font-size: x-large;text-align: center;">
 									<b>Total </b>{{order.TotalPrice |  currency:"USD $"}}</span></div>
 									</div>
-									<div class="row" ng-show="order.Status == 'C'">
-									<div class="col-md-12"><button type="button" class="btn btn-danger">Cancel</button></div>
+									<div class="row" ng-show="order.Status == 'N'">
+									<div class="col-md-8"><button type="button" class="btn btn-danger btn-sm btn-block" ng-click="cancelOrder(order)">Cancel</button></div>
 									</div>
 									</div>
 								</div>

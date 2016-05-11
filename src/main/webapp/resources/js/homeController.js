@@ -36,6 +36,28 @@ FoodOrderApp.controller('HomeController', function($scope, $http) {
 		$scope.csrfToken.token = token;
 		$scope.getOrderHistory();
 	}
+	
+	$scope.cancelOrder = function(order){
+		var xsrf = $.param({
+			_csrf : $scope.csrfToken.token,
+			orderid:order.Id
+		});
+		$http({
+			method : 'POST',
+			url : './cancelSubmittedOrder',
+			data : xsrf,
+			headers : {
+				'Content-Type' : 'application/x-www-form-urlencoded'
+			},
+			withCredentials : true
+		}).success(function(data, status, headers, config) {
+			$scope.getOrderHistory();
+			console.log(data);
+			console.log("Order Cancel Completed!!");
+		}).error(function(data, status, headers, config) {
+			console.log("Order Cancel Failed :: " + data);
+		});
+	}
 
 	$scope.getOrderHistory = function() {
 		var xsrf = $.param({

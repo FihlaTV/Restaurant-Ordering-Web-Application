@@ -33,9 +33,9 @@ public class ItemDaoImpl implements ItemDao {
 	@Override
 	public List<Item> getActiveItems() {
 		@SuppressWarnings("unchecked")
-		List<Item> result = sessionFactory.getCurrentSession().createCriteria(Item.class)
+		List<Item> resultItems = sessionFactory.getCurrentSession().createCriteria(Item.class)
 				.add(Restrictions.eq("status", true)).addOrder(Order.asc("category")).list();
-		return result;
+		return resultItems;
 	}
 
 	@Override

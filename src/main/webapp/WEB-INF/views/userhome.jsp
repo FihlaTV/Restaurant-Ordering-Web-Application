@@ -85,8 +85,8 @@
 									<h2>{{ key }}</h2>
 									<li class="media" ng-repeat="item in value"><a
 										class="pull-left"><img class="media-object"
-											ng-src="../images/{{item.id}}" height="64"
-											width="64"> </a>
+											ng-src="../images/{{item.id}}" height="64" width="64">
+									</a>
 										<div class="media-body">
 											<h4 class="media-heading">
 												<b>{{item.ItemName}}&nbsp;</b>
@@ -155,16 +155,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="row" style="padding-top: 10px; height: 20%;" ng-show="order.error">
+			<div class="row" style="padding-top: 10px; height: 20%;"
+				ng-show="order.error">
 				<div class="col-md-12" style="padding-top: 10px; height: 100%;">
 					<div class="panel panel-success"
 						style="background: rgba(255, 255, 255, 0.9); height: 100%;">
 						<div class="panel-heading">
-							<h3 class="panel-title" style="color: #000000;">Order Fulfillment Message</h3>
+							<h3 class="panel-title" style="color: #000000;">Order
+								Fulfillment Message</h3>
 						</div>
 						<div class="panel-body">
-							<div class="row" style="text-align: center; text-shadow: white; vertical-align: middle; padding: 15px 0px;"">
-								<div class="col-md-12">{{order.errorMessage}}{{order.estimatedDateTime |  date:'medium'}}</div>
+							<div class="row"
+								style="text-align: center; text-shadow: white; vertical-align: middle; padding: 15px 0px;"">
+								<div class="col-md-12">{{order.errorMessage}}</div>
 							</div>
 						</div>
 					</div>
@@ -192,25 +195,37 @@
 										href="javascript:NewCal('pickupdate','ddmmmyyyy',true,12)"><img
 										src="../resources/images/cal.gif" width="16" height="16"
 										border="0" alt="Pick a date"></a> -->
-										<input type="date" name="pickupdate" id="pickupdate" ng-model="order.pickupdate" ng-change="changePickupDate()" style="width: 100%">
+									<input type="date" name="pickupdate" id="pickupdate"
+										ng-model="order.pickupdate" ng-change="changePickupDate()"
+										style="width: 100%">
 								</div>
 								<div class="col-md-2" style="text-align: left;">
-										<input type="time" name="pickuptime" id="pickuptime" ng-model="order.pickuptime" ng-change="changePickupTime()" style="width: 100%">
+									<input type="time" name="pickuptime" id="pickuptime"
+										ng-model="order.pickuptime" ng-change="changePickupTime()"
+										style="width: 100%">
 								</div>
 								<div class="col-md-1"></div>
 							</div>
 							<div class="row">
-							<div class="col-md-6" ng-show="order.submit">
-									<a class="btn btn-block btn-lg btn-success"
-										ng-click="submitOrder()">Submit Order</a>
+								<c:url var="submitURL" value="submitOrder" />
+								<form action="${submitURL}" id="submitForm" method="post">
+								<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" /></form>
+								<div class="col-md-6" ng-show="order.submit">
+									<input type="submit" class="btn btn-block btn-lg btn-success"
+										value="Submit Order" form="submitForm">
+									<!-- <a class="btn btn-block btn-lg btn-success"
+										ng-click="submitOrder()">Submit Order</a> -->
 								</div>
-								<div class="col-md-6"  ng-hide="order.submit">
+								<div class="col-md-6" ng-hide="order.submit">
 									<a class="btn btn-block btn-lg btn-success"
-										ng-click="validatePickupDate()" ng-disabled="order.pickupdateSet">{{order.buttonText}}</a>
+										ng-click="validatePickupDate()"
+										ng-disabled="order.pickupdateSet">{{order.buttonText}}</a>
 								</div>
 								<div class="col-md-6">
 									<button type="button" class="btn btn-block btn-lg btn-danger"
-										<%-- href="<c:url value="/logout" />" --%> ng-click="cancelOrder()">Cancel Order</button>
+										<%-- href="<c:url value="/logout" />" --%> ng-click="cancelOrder()">Cancel
+										Order</button>
 								</div>
 							</div>
 						</div>

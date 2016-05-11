@@ -1,7 +1,6 @@
 package TheApp275Final.term.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -13,16 +12,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.json.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +34,10 @@ import TheApp275Final.term.model.Item;
 import TheApp275Final.term.model.Order;
 import TheApp275Final.term.model.OrderItems;
 import TheApp275Final.term.model.Pipeline;
-import TheApp275Final.term.model.Pipeline1;
-import TheApp275Final.term.model.Pipeline2;
-import TheApp275Final.term.model.Pipeline3;
 import TheApp275Final.term.services.CustomerService;
 import TheApp275Final.term.services.IOrderService;
 import TheApp275Final.term.services.ItemService;
 import TheApp275Final.term.services.OrderSchedulingService;
-import TheApp275Final.term.services.OrderService;
 import TheApp275Final.term.utility.TheAppUtility;
 
 @Controller
@@ -119,6 +110,7 @@ public class CustomerController {
 	@RequestMapping(value = "/checkCustomerPickupDateTime")
 	public void checkCustomerPickupDateTime(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		HashMap<Integer, OrderTimes> slots = null;
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -149,8 +141,9 @@ public class CustomerController {
 			response.setStatus(200);
 			orderProcessingTime = orderService.getProcessingTime(order);
 			if (orderSchedulingService.checkPickUpTime(pickuptime)) {
-				HashMap<Integer, OrderTimes> slots = orderSchedulingService.checkFeasibiltyOfPickUpTIme(date, pickuptime, (int) orderProcessingTime);
+				slots = orderSchedulingService.checkFeasibiltyOfPickUpTIme(date, pickuptime, (int) orderProcessingTime);
 				if (slots != null) {
+					System.out.println("User Slot Feasible!!!");
 					for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
 						System.out.println(
 								"Suggested pickup time by checkFeasibiltyOfPickUpTIme is - with pipeline number - "
@@ -163,17 +156,52 @@ public class CustomerController {
 						LocalTime endTime = entry.getValue().getOrderEndTime();
 						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
 						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
+						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
 						System.out.println(order.toString());
 						break;
 					}
 					respTemp.put("pickupdatetime", true);
 					respTemp.put("estimatedDateTime", pickuptime);
 				} else {
-					respTemp.put("pickupdatetime", false);
+					System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
 					slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
+					if(slots != null){
+						LocalTime minLocalTime = LocalTime.of(23, 59);
+						int minKey = 0;
+						for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
+							System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
+									+ entry.getKey() + " Time is " + entry.getValue().toString());
+							if(entry.getValue().getOrderStartTime().isBefore(minLocalTime)){
+								minKey=entry.getKey();
+								minLocalTime=entry.getValue().getOrderStartTime();
+							}
+						}
+						Pipeline pipeline = TheAppUtility.getPipeline(minKey);
+				        
+						order.setPipeline(pipeline);
+						LocalTime startTime = slots.get(minKey).getOrderStartTime();
+						LocalTime endTime = slots.get(minKey).getOrderEndTime();
+						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
+						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
+						System.out.println(order.toString());
+						
+						//Set Response
+						String estimatedPickUpDateTime =  endTime.toString();
+						System.out.println(estimatedPickUpDateTime);
+						
+						respTemp.put("pickupdatetime", true);
+						respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
+					}else{
+						respTemp.put("pickupdatetime", false);
+					}
+				}
+			} else {
+				System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
+				slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
+				if(slots != null){
 					LocalTime minLocalTime = LocalTime.of(23, 59);
-					int minKey =0;
+					int minKey = 0;
 					for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
 						System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
 								+ entry.getKey() + " Time is " + entry.getValue().toString());
@@ -191,11 +219,16 @@ public class CustomerController {
 					order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
 					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
 					System.out.println(order.toString());
+					
+					//Set Response
+					String estimatedPickUpDateTime =  endTime.toString();
+					System.out.println(estimatedPickUpDateTime);
+					
+					respTemp.put("pickupdatetime", true);
+					respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
+				}else{
+					respTemp.put("pickupdatetime", false);
 				}
-
-			} else {
-				response.setStatus(404);
-				respTemp.put("Error", "Order Not Found");
 			}
 		}
 
@@ -246,35 +279,46 @@ public class CustomerController {
 			slots = orderSchedulingService.getEarliestTimeSlots(date,(int)orderProcessingTime);
 			
 			LocalTime minLocalTime = LocalTime.of(23, 59);
-			int minKey =0;
-			for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
-				System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
-						+ entry.getKey() + " Time is " + entry.getValue().toString());
-				if(entry.getValue().getOrderStartTime().isBefore(minLocalTime)){
-					minKey=entry.getKey();
-					minLocalTime=entry.getValue().getOrderStartTime();
+			int minKey = -1;
+			
+			if(slots != null){
+				for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
+					System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
+							+ entry.getKey() + " Time is " + entry.getValue().toString());
+					if(entry.getValue().getOrderStartTime().isBefore(minLocalTime)){
+						minKey=entry.getKey();
+						minLocalTime=entry.getValue().getOrderStartTime();
+					}
 				}
 			}
 			
-			Pipeline pipeline = TheAppUtility.getPipeline(minKey);
-	        
-			order.setPipeline(pipeline);
-			LocalTime startTime = slots.get(minKey).getOrderStartTime();
-			LocalTime endTime = slots.get(minKey).getOrderEndTime();
-			order.setOrderStartTime(LocalDateTime.of(LocalDate.now(),startTime));
-			order.setOrderEndTime(LocalDateTime.of(LocalDate.now(),endTime));
-			order.setPickUpTime(LocalDateTime.of(LocalDate.now(),endTime));
-			
-			System.out.println(order.toString());
-			
-			//Set Response
-			String estimatedPickUpDateTime =  endTime.toString();//.substring(0, endTime.toString().indexOf("."));
-			
-			System.out.println(estimatedPickUpDateTime);
-			
-			response.setStatus(200);
-			respTemp.put("pickupdatetime", false);
-			respTemp.put("estimatedDateTime",estimatedPickUpDateTime);
+			if(minKey != -1){
+				Pipeline pipeline = TheAppUtility.getPipeline(minKey);
+		        
+				order.setPipeline(pipeline);
+				LocalTime startTime = slots.get(minKey).getOrderStartTime();
+				LocalTime endTime = slots.get(minKey).getOrderEndTime();
+				order.setOrderStartTime(LocalDateTime.of(LocalDate.now(),startTime));
+				order.setOrderEndTime(LocalDateTime.of(LocalDate.now(),endTime));
+				order.setPickUpTime(LocalDateTime.of(LocalDate.now(),endTime));
+				
+				System.out.println(order.toString());
+				
+				//Set Response
+				String estimatedPickUpDateTime =  endTime.toString();//.substring(0, endTime.toString().indexOf("."));
+				
+				System.out.println(estimatedPickUpDateTime);
+				
+				//Set the order to the Session
+				httpSession.setAttribute("Order", order);
+				
+				response.setStatus(200);
+				respTemp.put("pickupdatetime", true);
+				respTemp.put("estimatedDateTime",estimatedPickUpDateTime);	
+			}else{
+				response.setStatus(200);
+				respTemp.put("pickupdatetime", false);
+			}
 		}
 
 		//Set the order to the Session
@@ -287,18 +331,20 @@ public class CustomerController {
 
 	@RequestMapping(value = "/getMenuItems", method = RequestMethod.POST)
 	public void getMenuItems(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		System.out.println();
 
 		JSONArray jsonArray = new JSONArray();
 		List<Item> itemList = itemService.getActiveItems();
 
 		for (Item item : itemList) {
 			JSONObject temp = new JSONObject();
+			temp.put("id", item.getId());
 			temp.put("PreparationTime", item.getPreparationTime());
 			temp.put("Calories", item.getCalories());
 			temp.put("Category", item.getCategory());
 			temp.put("ItemName", item.getItemName());
 			temp.put("UnitPrice", item.getUnitPrice());
-			temp.put("Picture", item.getPicture());
+			//temp.put("Picture", item.getPicture());
 			temp.put("Quantity", 1);
 			jsonArray.put(temp);
 		}
@@ -313,7 +359,7 @@ public class CustomerController {
 		Order order = (Order) httpSession.getAttribute("Order");
 		
 		// Setting the user id in order object
-	//	order.setOrderUserId(((Customer)(SecurityContextHolder.getContext().getAuthentication())).getId());
+		order.setCustomer(((Customer)(SecurityContextHolder.getContext().getAuthentication())));
 		
 		//This will return true after the saving the order
 		orderSchedulingService.saveOrder(order);

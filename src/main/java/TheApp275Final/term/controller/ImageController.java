@@ -21,7 +21,7 @@ public class ImageController {
 	ItemService itemService;
 	
 	@RequestMapping(value="/images/{itemId}", method = RequestMethod.GET)
-	public ModelAndView addItem(HttpServletResponse response, @PathVariable("itemId") int itemId) throws IOException{
+	public void addItem(HttpServletResponse response, @PathVariable("itemId") int itemId) throws IOException{
 		
 		byte[] imageBytes = itemService.getImage(itemId);
 		if(imageBytes!=null&&imageBytes.length>0){
@@ -31,7 +31,7 @@ public class ImageController {
 			o.flush();
 			o.close();
 		}
-		return new ModelAndView("items");
+		//return new ModelAndView("items");
 	}
 	
 }

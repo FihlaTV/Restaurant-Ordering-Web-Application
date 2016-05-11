@@ -38,7 +38,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
 		System.out.println(accessDeniedException.getLocalizedMessage());
 		
 		//do some business logic, then redirect to errorPage url
-		response.sendRedirect("login?error");
+		response.sendRedirect("../login?error");
 
 	}
 

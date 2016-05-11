@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
+<title>Customer Home</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script type="text/javascript"
@@ -22,12 +23,11 @@
 	src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
 <script
 	src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.4.7/angular-filter.js"></script>
-<script type="text/javascript" src="../resources/js/orderController.js"></script>
-<script type="text/javascript" src="../resources/js/datetimepicker.js"></script>
+<script type="text/javascript" src="../resources/js/homeController.js"></script>
 </head>
 
 <body style="overflow: auto;" ng-app="FoodOrderApp"
-	ng-controller="OrderController"
+	ng-controller="HomeController"
 	ng-init="init('${_csrf.parameterName}','${_csrf.token}')">
 	<div class="cover">
 		<div class="navbar navbar-default navbar-fixed-top"
@@ -45,6 +45,8 @@
 				<div class="collapse navbar-collapse" id="navbar-ex-collapse">
 					<ul class="nav navbar-nav navbar-right">
 						<li class="active"><a href="<c:url value="/user/" />">Home</a></li>
+						<li class="active"><a href="<c:url value="/user/newOrder" />">Place
+								Order</a></li>
 						<li><a href="<c:url value="/logout" />">Logout</a></li>
 					</ul>
 				</div>
@@ -67,113 +69,54 @@
 							<c:out value="${customer.firstname}" />
 							<c:out value="${customer.lastname}" />
 						</h2>
-						<h4>You Can Place Your Order Here !!</h4>
+						<h4>Here is what you have Ordered from us us before....</h4>
 					</div>
 				</div>
 			</div>
 			<div class="row" style="height: 50%;">
-				<div class="col-md-6 text-left">
-					<div class="panel panel-success"
-						style="background: rgba(255, 255, 255, 0.9); height: 100%;">
-						<div class="panel-heading">
-							<h3 class="panel-title" style="color: #000000;">Menu Items</h3>
-						</div>
-						<div class="panel-body">
-							<ul class="media-list" style="height: 80%; overflow-y: auto;">
-								<div class="media"
-									ng-repeat="(key, value) in items | groupBy: 'Category'">
-									<h2>{{ key }}</h2>
-									<li class="media" ng-repeat="item in value"><a
-										class="pull-left"><img class="media-object"
-											ng-src="../images/{{item.id}}" height="64" width="64">
-									</a>
-										<div class="media-body">
-											<h4 class="media-heading">
-												<b>{{item.ItemName}}&nbsp;</b>
-												<button type="button" class="btn btn-success btn-sm"
-													ng-click="AddLineItem(item)">Add Item</button>
-											</h4>
-											<p style="font-size: 10pt;">
-												<b>Calories : </b>{{item.Calories}} KCals<br> <b>UnitPrice
-													:</b> {{item.UnitPrice | currency:"USD$"}}
-											</p>
-										</div></li>
-								</div>
-							</ul>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 text-left">
-					<div class="panel panel-success"
-						style="background: rgba(255, 255, 255, 0.9); height: 100%;">
-						<div class="panel-heading">
-							<h3 class="panel-title" style="color: #000000;">Current
-								Order</h3>
-						</div>
-						<div class="panel-body">
-							<ul class="media-list" style="height: 80%; overflow-y: auto;">
-								<div class="media"
-									ng-repeat="(key, value) in cartItems | groupBy: 'Category'">
-									<h2>{{ key }}</h2>
-									<li class="media" ng-repeat="item in value">
-										<!-- 	<a class="pull-left"><img class="media-object"
-											ng-src="data:image/PNG;base64,{{item.Picture}}" height="64"
-											width="64"> </a> -->
-										<div class="media-body">
-											<div class="row">
-												<div class="col-md-6 text-left">
-													<h3 class="media-heading">
-														<b>{{item.ItemName}}&nbsp;</b>
-													</h3>
-													<p style="font-size: 10pt;">
-														<b>Calories : </b>{{item.Calories}} <br>
-													</p>
-												</div>
-												<div class="col-md-6 text-right">
-													<span style="font-size: 12pt;">
-														<div class="row">
-															<div class="col-md-6 text-right">
-																<input type="number" name="quantity" min="1" max="100"
-																	ng-change="changeQty(item)" ng-model="item.Quantity">
-															</div>
-															<div class="col-md-6 text-right">
-																<b>{{item.UnitPrice * item.Quantity |
-																	currency:"USD$"}}
-																	<button type="button" class="btn btn-danger btn-sm"
-																		ng-click="deleteLineItem(item)">X</button>
-																</b>
-															</div>
-														</div>
-													</span>
-												</div>
-											</div>
-										</div>
-									</li>
-								</div>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row" style="padding-top: 10px; height: 20%;"
-				ng-show="order.error">
-				<div class="col-md-12" style="padding-top: 10px; height: 100%;">
+				<div class="col-md-12 text-left">
 					<div class="panel panel-success"
 						style="background: rgba(255, 255, 255, 0.9); height: 100%;">
 						<div class="panel-heading">
 							<h3 class="panel-title" style="color: #000000;">Order
-								Fulfillment Message</h3>
+								History</h3>
 						</div>
 						<div class="panel-body">
-							<div class="row"
-								style="text-align: center; text-shadow: white; vertical-align: middle; padding: 15px 0px;"">
-								<div class="col-md-12">{{order.errorMessage}}</div>
-							</div>
+							<ul class="media-list" style="height: 80%; overflow-y: auto;">
+								<li class="media" ng-repeat="order in orderHistory">
+									<dl class="dl-horizontal">
+										<dt style="text-align:center;"><span style="font-size: large;">Order ID</span></dt>
+										<dd>{{order.id}}</dd>
+										<dt style="text-align:center;"><span style="font-size: medium;">Order ID</span></dt>
+										<dd>Client-side scripting generally refers to the
+											category of computer programs on the web that are executed
+											client-side i.e. by the user's web browser.</dd>
+										<dt>Document Tree</dt>
+										<dd>The tree of elements encoded in the source document.</dd>
+									</dl> <!-- <div class="media-body">
+									<div class="row">
+									<div class="col-md-2">Order Id : {{order.id}}</div>
+									<div class="col-md-2"></div>
+									<div class="col-md-2"></div>
+									</div>
+										<h4 class="media-heading">
+											<b>Order Id : {{order.id}}&nbsp;</b>
+											<button type="button" class="btn btn-success btn-sm"
+												ng-click="AddLineItem(item)">Add Item</button>
+										</h4>
+										<p style="font-size: 10pt;">
+											<b>Order Placed On : </b>{{order.OrderPlacementTime | date:'medium'}}<br> <b>UnitPrice
+												:</b> {{order.UnitPrice | currency:"USD$"}}
+												<br> <b>Order Pickup Time
+												:</b> {{order.PickUpTime | date:'medium'}}
+										</p>
+									</div></li> -->
+							</ul>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="row" style="padding-top: 10px; height: 28%;">
+			<!-- 			<div class="row" style="padding-top: 10px; height: 28%;">
 				<div class="col-md-12" style="padding-top: 10px; height: 100%;">
 					<div class="panel panel-success"
 						style="background: rgba(255, 255, 255, 0.9); height: 100%;">
@@ -190,48 +133,17 @@
 									<span style="font-size: 15pt;">Pickup Date and Time </span>
 								</div>
 								<div class="col-md-2" style="text-align: left;">
-									<!-- <input id="pickupdate" type="text" size="25"
-										ng-model="order.pickupdate" ng-change="changePickupDate()"><a
-										href="javascript:NewCal('pickupdate','ddmmmyyyy',true,12)"><img
-										src="../resources/images/cal.gif" width="16" height="16"
-										border="0" alt="Pick a date"></a> -->
-									<input type="date" name="pickupdate" id="pickupdate"
-										ng-model="order.pickupdate" ng-change="changePickupDate()"
-										style="width: 100%">
+
 								</div>
 								<div class="col-md-2" style="text-align: left;">
-									<input type="time" name="pickuptime" id="pickuptime"
-										ng-model="order.pickuptime" ng-change="changePickupTime()"
-										style="width: 100%">
 								</div>
 								<div class="col-md-1"></div>
 							</div>
-							<div class="row">
-								<c:url var="submitURL" value="submitOrder" />
-								<form action="${submitURL}" id="submitForm" method="post">
-								<input type="hidden" name="${_csrf.parameterName}"
-								value="${_csrf.token}" /></form>
-								<div class="col-md-6" ng-show="order.submit">
-									<input type="submit" class="btn btn-block btn-lg btn-success"
-										value="Submit Order" form="submitForm">
-									<!-- <a class="btn btn-block btn-lg btn-success"
-										ng-click="submitOrder()">Submit Order</a> -->
-								</div>
-								<div class="col-md-6" ng-hide="order.submit">
-									<a class="btn btn-block btn-lg btn-success"
-										ng-click="validatePickupDate()"
-										ng-disabled="order.pickupdateSet">{{order.buttonText}}</a>
-								</div>
-								<div class="col-md-6">
-									<button type="button" class="btn btn-block btn-lg btn-danger"
-										<%-- href="<c:url value="/logout" />" --%> ng-click="cancelOrder()">Cancel
-										Order</button>
-								</div>
-							</div>
+
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </body>

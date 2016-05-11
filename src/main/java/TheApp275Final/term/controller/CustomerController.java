@@ -59,7 +59,7 @@ public class CustomerController {
 	@Autowired
 	OrderSchedulingService orderSchedulingService;
 
-	@RequestMapping(value = "/")
+	@RequestMapping(value={"*", "/"})
 	public ModelAndView defaultUserHomePage(HttpServletResponse response) throws IOException {
 		Enumeration sessionVariables = httpSession.getAttributeNames();
 		while (sessionVariables.hasMoreElements()) {
@@ -70,9 +70,21 @@ public class CustomerController {
 		Customer customer = customerService.getCustomer(getPrincipal());
 		return new ModelAndView("userhome").addObject("customer", customer);
 	}
+	
+	@RequestMapping(value={"/newOrder"})
+	public ModelAndView newOrder(HttpServletResponse response) throws IOException {
+		Enumeration sessionVariables = httpSession.getAttributeNames();
+		while (sessionVariables.hasMoreElements()) {
+			String param = (String) sessionVariables.nextElement();
+			System.out.println("Session Variables " + param + " and Value == " + httpSession.getAttribute(param));
+		}
+		System.out.println("Session in Home GET PRINCIPLE" + getPrincipal());
+		Customer customer = customerService.getCustomer(getPrincipal());
+		return new ModelAndView("userNewOrder").addObject("customer", customer);
+	}
 
 	@RequestMapping(value = "/initializeOrder")
-	public void newOrderPage(HttpServletResponse response) throws IOException {
+	public void initializeOrder(HttpServletResponse response) throws IOException {
 
 		// Create An Order and Attach To Session
 		if (httpSession.getAttribute("Order") == null) {
@@ -120,14 +132,14 @@ public class CustomerController {
 
 		System.out.println("pickupdate == " + pickupdate);
 		System.out.println("pickuptime == " + pickuptime);
-		
+
 		Date date = null;
 		try {
 			date = formatter.parse(pickupdate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		JSONObject respTemp = new JSONObject();
 
 		// Get the order from the Session
@@ -148,15 +160,15 @@ public class CustomerController {
 						System.out.println(
 								"Suggested pickup time by checkFeasibiltyOfPickUpTIme is - with pipeline number - "
 										+ entry.getKey() + " Time is " + entry.getValue().toString());
-						
+
 						Pipeline pipeline = TheAppUtility.getPipeline(entry.getKey());
-				        
+
 						order.setPipeline(pipeline);
 						LocalTime startTime = entry.getValue().getOrderStartTime();
 						LocalTime endTime = entry.getValue().getOrderEndTime();
-						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
-						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate), startTime));
+						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate), endTime));
+						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate), endTime));
 						System.out.println(order.toString());
 						break;
 					}
@@ -164,75 +176,78 @@ public class CustomerController {
 					respTemp.put("estimatedDateTime", pickuptime);
 				} else {
 					System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
-					slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
-					if(slots != null){
+					slots = orderSchedulingService.getEarliestTimeSlots(date, (int) orderProcessingTime);
+					if (slots != null) {
 						LocalTime minLocalTime = LocalTime.of(23, 59);
 						int minKey = 0;
 						for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
-							System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
-									+ entry.getKey() + " Time is " + entry.getValue().toString());
-							if(entry.getValue().getOrderStartTime().isBefore(minLocalTime)){
-								minKey=entry.getKey();
-								minLocalTime=entry.getValue().getOrderStartTime();
+							System.out.println(
+									"Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
+											+ entry.getKey() + " Time is " + entry.getValue().toString());
+							if (entry.getValue().getOrderStartTime().isBefore(minLocalTime)) {
+								minKey = entry.getKey();
+								minLocalTime = entry.getValue().getOrderStartTime();
 							}
 						}
 						Pipeline pipeline = TheAppUtility.getPipeline(minKey);
-				        
+
 						order.setPipeline(pipeline);
 						LocalTime startTime = slots.get(minKey).getOrderStartTime();
 						LocalTime endTime = slots.get(minKey).getOrderEndTime();
-						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
-						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
+						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate), startTime));
+						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate), endTime));
+						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),
+								TheAppUtility.convertStringToLocalTime(pickuptime)));
 						System.out.println(order.toString());
-						
-						//Set Response
-						String estimatedPickUpDateTime =  endTime.toString();
+
+						// Set Response
+						String estimatedPickUpDateTime = endTime.toString();
 						System.out.println(estimatedPickUpDateTime);
-						
+
 						respTemp.put("pickupdatetime", true);
 						respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
-					}else{
+					} else {
 						respTemp.put("pickupdatetime", false);
 					}
 				}
 			} else {
 				System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
-				slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
-				if(slots != null){
+				slots = orderSchedulingService.getEarliestTimeSlots(date, (int) orderProcessingTime);
+				if (slots != null) {
 					LocalTime minLocalTime = LocalTime.of(23, 59);
 					int minKey = 0;
 					for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
 						System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
 								+ entry.getKey() + " Time is " + entry.getValue().toString());
-						if(entry.getValue().getOrderStartTime().isBefore(minLocalTime)){
-							minKey=entry.getKey();
-							minLocalTime=entry.getValue().getOrderStartTime();
+						if (entry.getValue().getOrderStartTime().isBefore(minLocalTime)) {
+							minKey = entry.getKey();
+							minLocalTime = entry.getValue().getOrderStartTime();
 						}
 					}
 					Pipeline pipeline = TheAppUtility.getPipeline(minKey);
-			        
+
 					order.setPipeline(pipeline);
 					LocalTime startTime = slots.get(minKey).getOrderStartTime();
 					LocalTime endTime = slots.get(minKey).getOrderEndTime();
-					order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
-					order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
+					order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate), startTime));
+					order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate), endTime));
+					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),
+							TheAppUtility.convertStringToLocalTime(pickuptime)));
 					System.out.println(order.toString());
-					
-					//Set Response
-					String estimatedPickUpDateTime =  endTime.toString();
+
+					// Set Response
+					String estimatedPickUpDateTime = endTime.toString();
 					System.out.println(estimatedPickUpDateTime);
-					
+
 					respTemp.put("pickupdatetime", true);
 					respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
-				}else{
+				} else {
 					respTemp.put("pickupdatetime", false);
 				}
 			}
 		}
 
-		//Set the order to the Session
+		// Set the order to the Session
 		httpSession.setAttribute("Order", order);
 
 		System.out.println("orderProcessingTime == " + orderProcessingTime);
@@ -244,18 +259,18 @@ public class CustomerController {
 
 	@RequestMapping(value = "/estimatePickupDataTime")
 	public void estimatePickupDataTime(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
+
 		String pickupdate = request.getParameter("pickupdate");
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		
+
 		Date date = null;
 		try {
-			date = formatter.parse(pickupdate);//(LocalDate.now().toString());
+			date = formatter.parse(pickupdate);// (LocalDate.now().toString());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		float orderProcessingTime = 0;
 
 		System.out.println("pickupdate == " + pickupdate);
@@ -264,8 +279,8 @@ public class CustomerController {
 
 		// Get the order from the Session
 		Order order = (Order) httpSession.getAttribute("Order");
-		
-		HashMap<Integer,OrderTimes> slots = null;
+
+		HashMap<Integer, OrderTimes> slots = null;
 
 		if (order == null) {
 			// Respond with 404 Message
@@ -273,65 +288,66 @@ public class CustomerController {
 			respTemp.put("Error", "Order Not Found");
 		} else {
 			orderProcessingTime = orderService.getProcessingTime(order);
-			
+
 			System.out.println("orderProcessingTime == " + orderProcessingTime);
-			
-			slots = orderSchedulingService.getEarliestTimeSlots(date,(int)orderProcessingTime);
-			
+
+			slots = orderSchedulingService.getEarliestTimeSlots(date, (int) orderProcessingTime);
+
 			LocalTime minLocalTime = LocalTime.of(23, 59);
 			int minKey = -1;
-			
-			if(slots != null){
+
+			if (slots != null) {
 				for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
 					System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
 							+ entry.getKey() + " Time is " + entry.getValue().toString());
-					if(entry.getValue().getOrderStartTime().isBefore(minLocalTime)){
-						minKey=entry.getKey();
-						minLocalTime=entry.getValue().getOrderStartTime();
+					if (entry.getValue().getOrderStartTime().isBefore(minLocalTime)) {
+						minKey = entry.getKey();
+						minLocalTime = entry.getValue().getOrderStartTime();
 					}
 				}
 			}
-			
-			if(minKey != -1){
+
+			if (minKey != -1) {
 				Pipeline pipeline = TheAppUtility.getPipeline(minKey);
-		        
+
 				order.setPipeline(pipeline);
 				LocalTime startTime = slots.get(minKey).getOrderStartTime();
 				LocalTime endTime = slots.get(minKey).getOrderEndTime();
-				order.setOrderStartTime(LocalDateTime.of(LocalDate.now(),startTime));
-				order.setOrderEndTime(LocalDateTime.of(LocalDate.now(),endTime));
-				order.setPickUpTime(LocalDateTime.of(LocalDate.now(),endTime));
-				
+				order.setOrderStartTime(LocalDateTime.of(LocalDate.now(), startTime));
+				order.setOrderEndTime(LocalDateTime.of(LocalDate.now(), endTime));
+				order.setPickUpTime(LocalDateTime.of(LocalDate.now(), endTime));
+
 				System.out.println(order.toString());
-				
-				//Set Response
-				String estimatedPickUpDateTime =  endTime.toString();//.substring(0, endTime.toString().indexOf("."));
-				
+
+				// Set Response
+				String estimatedPickUpDateTime = endTime.toString();// .substring(0,
+																	// endTime.toString().indexOf("."));
+
 				System.out.println(estimatedPickUpDateTime);
-				
-				//Set the order to the Session
+
+				// Set the order to the Session
 				httpSession.setAttribute("Order", order);
-				
+
 				response.setStatus(200);
 				respTemp.put("pickupdatetime", true);
-				respTemp.put("estimatedDateTime",estimatedPickUpDateTime);	
-			}else{
+				respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
+			} else {
 				response.setStatus(200);
 				respTemp.put("pickupdatetime", false);
 			}
 		}
 
-		//Set the order to the Session
+		// Set the order to the Session
 		httpSession.setAttribute("Order", order);
-		
+
 		// Send the Response
 		response.setContentType("application/json");
 		response.getWriter().write(respTemp.toString());
 	}
 
-	@RequestMapping(value = "git ", method = RequestMethod.POST)
+	@RequestMapping(value = "getMenuItems", method = RequestMethod.POST)
 	public void getMenuItems(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
+
 		System.out.println("Customer from Session ==> " + httpSession.getAttribute("customer").toString());
 
 		JSONArray jsonArray = new JSONArray();
@@ -345,7 +361,7 @@ public class CustomerController {
 			temp.put("Category", item.getCategory());
 			temp.put("ItemName", item.getItemName());
 			temp.put("UnitPrice", item.getUnitPrice());
-			//temp.put("Picture", item.getPicture());
+			// temp.put("Picture", item.getPicture());
 			temp.put("Quantity", 1);
 			jsonArray.put(temp);
 		}
@@ -353,23 +369,71 @@ public class CustomerController {
 		response.getWriter().write(jsonArray.toString());
 	}
 	
-	@RequestMapping(value = "/submitOrder", method = RequestMethod.POST)
-	public void submitOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	@RequestMapping(value = "getOrderHistory", method = RequestMethod.POST)
+	public void getOrderHistory(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		Customer customer = (Customer) httpSession.getAttribute("customer");
 		
-		// Get the order from the Session
-		Order order = (Order) httpSession.getAttribute("Order");
+		JSONArray jsonArray = new JSONArray();
 		
-		// Setting the user id in order object
-		order.setCustomer(customer);
+		System.out.println("Customer from Session ==> " + httpSession.getAttribute("customer").toString());
 		
-		//This will return true after the saving the order
-		orderSchedulingService.saveOrder(order);
-		
-		//Have to work on the response 
+		if(customer != null){
+			
+			List<Order> OrderHistory = customerService.getListOfOrder(customer.getId());
+
+			for (Order order : OrderHistory) {
+				
+				float totalPrice = 0;
+				JSONObject temp = new JSONObject();
+				List<OrderItems> orderItems = order.getOrderItems();
+				
+				for(OrderItems orderItem : orderItems){
+					totalPrice += (orderItem.getUnitPrice()*orderItem.getQuantity());
+				}
+
+				temp.put("totalPrice", totalPrice);
+				temp.put("id", order.getOrderId());
+				temp.put("OrderPlacementTime", order.getOrderPlacementTime());
+				temp.put("PickUpTime", order.getPickUpTime());
+				temp.put("Status",(char) order.getStatus());
+				jsonArray.put(temp);
+			}	
+		}
 		response.setContentType("application/json");
-		response.getWriter().write("");
+		response.getWriter().write(jsonArray.toString());
+	}
+
+	@RequestMapping(value = "/submitOrder", method = RequestMethod.POST)
+	public ModelAndView submitOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Customer customer = null;
+		try {
+			customer = (Customer) httpSession.getAttribute("customer");
+
+			// Get the order from the Session
+			Order order = (Order) httpSession.getAttribute("Order");
+
+			order.setStatus('N');
+
+			// Setting the user id in order object
+			order.setCustomer(customer);
+
+			// This will return true after the saving the order
+			orderSchedulingService.saveOrder(order);
+			
+			// Create An Order and Attach To Session
+			if (httpSession.getAttribute("Order") != null) {
+				Order newOrder = new Order();
+				List<OrderItems> orderItems = new ArrayList<>();
+				newOrder.setOrderItems(orderItems);
+				httpSession.setAttribute("Order", newOrder);
+			}
+			return new ModelAndView("OrderSummary","order",order);
+		} catch (Exception e) {
+			System.out.println("Error::submitOrder::"+e.getMessage());
+			e.printStackTrace();
+			return new ModelAndView("userNewOrder").addObject("customer", customer);
+		}
 	}
 
 	@RequestMapping(value = "/getShoppingCart", method = RequestMethod.POST)

@@ -90,7 +90,7 @@ public class CustomerDao implements ICustomerDao {
 	}
 
 	@Override
-	public List<Order> getListOfOrder(int id) {
+	public List<Order> getListOfOrder(long id) {
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
@@ -106,7 +106,6 @@ public class CustomerDao implements ICustomerDao {
 				tx.rollback();
 			e.printStackTrace();
 		} finally {
-			session.close();
 		}
 		return null;
 	}

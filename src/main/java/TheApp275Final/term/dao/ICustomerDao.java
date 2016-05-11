@@ -15,6 +15,6 @@ public interface ICustomerDao {
 
 	Customer updateCustomer(Customer customer);
 
-	public List<Order> getListOfOrder(int id);
+	public List<Order> getListOfOrder(long l);
 
 }

@@ -331,7 +331,8 @@ public class CustomerController {
 
 	@RequestMapping(value = "/getMenuItems", method = RequestMethod.POST)
 	public void getMenuItems(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		System.out.println();
+		
+		//System.out.println(httpSession.getAttribute(name));
 
 		JSONArray jsonArray = new JSONArray();
 		List<Item> itemList = itemService.getActiveItems();

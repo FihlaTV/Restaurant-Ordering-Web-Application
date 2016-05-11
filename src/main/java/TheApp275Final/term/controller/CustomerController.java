@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -354,7 +356,7 @@ public class CustomerController {
 	}
 	
 	@RequestMapping(value = "/submitOrder", method = RequestMethod.POST)
-	public void submitOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ModelAndView submitOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		Customer customer = (Customer) httpSession.getAttribute("customer");
 		
@@ -367,9 +369,7 @@ public class CustomerController {
 		//This will return true after the saving the order
 		orderSchedulingService.saveOrder(order);
 		
-		//Have to work on the response 
-		response.setContentType("application/json");
-		response.getWriter().write("");
+		return new ModelAndView("OrderSummary","order",order);
 	}
 
 	@RequestMapping(value = "/getShoppingCart", method = RequestMethod.POST)

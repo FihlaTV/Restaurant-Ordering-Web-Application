@@ -189,9 +189,11 @@ public class CustomerController {
 						System.out.println(
 								"Suggested pickup time by checkFeasibiltyOfPickUpTIme is - with pipeline number - "
 										+ entry.getKey() + " Time is " + entry.getValue().toString());
-						
-						Pipeline pipeline = TheAppUtility.getPipeline(entry.getKey());
-				        
+						Pipeline pipeline = null;
+						if (entry.getValue().getOrderEndTime()
+								.isBefore(TheAppUtility.convertStringToLocalTime(pickuptime))
+								|| entry.getValue().getOrderEndTime()
+										.equals(TheAppUtility.convertStringToLocalTime(pickuptime))) {
 						order.setPipeline(pipeline);
 						LocalTime startTime = entry.getValue().getOrderStartTime();
 						LocalTime endTime = entry.getValue().getOrderEndTime();
@@ -200,6 +202,7 @@ public class CustomerController {
 						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
 						System.out.println(order.toString());
 						break;
+						}
 					}
 					respTemp.put("pickupdatetime", true);
 					respTemp.put("estimatedDateTime", pickuptime);

@@ -1,15 +1,43 @@
-var FoodOrderApp = angular.module('FoodOrderApp', ['angular.filter']);
-FoodOrderApp.config(function( $compileProvider ) {   
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|blob):|data:image\//);
-    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|file|ftp|blob):|data:image\//);
-  }
-);
+var FoodOrderApp = angular.module('FoodOrderApp', [ 'angular.filter' ]);
+
+FoodOrderApp.filter('status', function() {
+	return function(input) {
+		switch(input){
+		case "C" :
+			return "Cancelled";
+		case "N" :
+			return "Order Submitted";
+		case "P" :
+			return "Preparing Order";
+		case "R" :
+			return "Ready For Pickup";
+		case "F" :
+			return "Order Fullfilled";
+		default:
+			return "";
+		}
+	};
+});
+
+FoodOrderApp
+		.config(function($compileProvider) {
+			$compileProvider
+					.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|blob):|data:image\//);
+			$compileProvider
+					.imgSrcSanitizationWhitelist(/^\s*(https?|file|ftp|blob):|data:image\//);
+		});
 FoodOrderApp.controller('HomeController', function($scope, $http) {
-	
+
 	$scope.csrfToken = {};
 	$scope.orderHistory = {};
-	
-	$scope.getOrderHistory = function(){
+
+	$scope.init = function(name, token) {
+		$scope.csrfToken.name = name;
+		$scope.csrfToken.token = token;
+		$scope.getOrderHistory();
+	}
+
+	$scope.getOrderHistory = function() {
 		var xsrf = $.param({
 			_csrf : $scope.csrfToken.token
 		});
@@ -24,16 +52,10 @@ FoodOrderApp.controller('HomeController', function($scope, $http) {
 		}).success(function(data, status, headers, config) {
 			$scope.orderHistory = data;
 			console.log(data);
-			console.log("Order Init Completed!!");
+			console.log("Order History Completed!!");
 		}).error(function(data, status, headers, config) {
-			console.log("Order Init Failed :: " + data);
+			console.log("Order History Failed :: " + data);
 		});
 	}
-	
-	$scope.init = function(name,token){
-		$scope.csrfToken.name = name;
-		$scope.csrfToken.token = token;
-		$scope.getOrderHistory();
-	}
-	
+
 });

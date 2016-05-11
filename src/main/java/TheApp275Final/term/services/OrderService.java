@@ -47,5 +47,11 @@ public class OrderService implements IOrderService{
 	public void resetOrders(){
 		orderDao.resetOrders();
 	}
+	
+	@Override
+	@Transactional
+	public void cancelOrder(int orderId) {
+		orderDao.cancelOrder(orderId);
+	}
 
 }

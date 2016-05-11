@@ -89,11 +89,27 @@ public class CustomerController {
 		// Create An Order and Attach To Session
 		if (httpSession.getAttribute("Order") == null) {
 			Order order = new Order();
+			order.setOrderPlacementTime(LocalDateTime.now());
 			List<OrderItems> orderItems = new ArrayList<>();
 			order.setOrderItems(orderItems);
 			httpSession.setAttribute("Order", order);
 		}
 
+		// Respond with 200 Message
+		response.setStatus(200);
+		response.setContentType("application/json");
+		JSONObject temp = new JSONObject();
+		response.getWriter().write(temp.toString());
+	}
+	
+	@RequestMapping(value = "/cancelSubmittedOrder")
+	public void cancelSubmittedOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		int orderId = Integer.valueOf(request.getParameter("orderid"));
+		try{
+			orderService.cancelOrder(orderId);
+		}catch(Exception e){
+			
+		}
 		// Respond with 200 Message
 		response.setStatus(200);
 		response.setContentType("application/json");
@@ -388,11 +404,11 @@ public class CustomerController {
 					totalPrice += (orderItem.getUnitPrice()*orderItem.getQuantity());
 				}
 
-				temp.put("totalPrice", totalPrice);
-				temp.put("id", order.getOrderId());
+				temp.put("TotalPrice", totalPrice);
+				temp.put("Id", order.getOrderId());
 				temp.put("OrderPlacementTime", order.getOrderPlacementTime());
 				temp.put("PickUpTime", order.getPickUpTime());
-				temp.put("Status",(char) order.getStatus());
+				temp.put("Status", order.getStatus()+"");
 				jsonArray.put(temp);
 			}	
 		}

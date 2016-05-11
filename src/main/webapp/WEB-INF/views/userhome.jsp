@@ -81,37 +81,42 @@
 							<h3 class="panel-title" style="color: #000000;">Order
 								History</h3>
 						</div>
-						<div class="panel-body">
-							<ul class="media-list" style="height: 80%; overflow-y: auto;">
-								<li class="media" ng-repeat="order in orderHistory">
-									<dl class="dl-horizontal">
-										<dt style="text-align:center;"><span style="font-size: large;">Order ID</span></dt>
-										<dd>{{order.id}}</dd>
-										<dt style="text-align:center;"><span style="font-size: medium;">Order ID</span></dt>
-										<dd>Client-side scripting generally refers to the
-											category of computer programs on the web that are executed
-											client-side i.e. by the user's web browser.</dd>
-										<dt>Document Tree</dt>
-										<dd>The tree of elements encoded in the source document.</dd>
-									</dl> <!-- <div class="media-body">
-									<div class="row">
-									<div class="col-md-2">Order Id : {{order.id}}</div>
-									<div class="col-md-2"></div>
-									<div class="col-md-2"></div>
+						<div class="panel-body" style="height: 80%; overflow-y: auto;">
+							<div class="well well-sm" ng-repeat="order in orderHistory | orderBy:'OrderPlacementTime':true ">
+								<div class="row" >
+									<div class="col-md-8">
+										<dl class="dl-horizontal">
+											<dt style="text-align: center;">
+												<span style="font-size: large;">Order Id</span>
+											</dt>
+											<dd>
+												<span style="font-size: large;">{{order.Id}}</span>
+											</dd>
+											<dt style="text-align: center;">
+												<span style="font-size: large;">Order Placed On</span>
+											</dt>
+											<dd><span style="font-size: large;">{{order.OrderPlacementTime | date:'medium'}}</span></dd>
+											<dt style="text-align: center;">
+												<span style="font-size: large;">Order Pickup Time</span>
+											</dt>
+											<dd><span style="font-size: large;">{{order.PickUpTime | date:'medium'}}</span></dd>
+											<dt style="text-align: center;">
+												<span style="font-size: large;">Order Status</span>
+											</dt>
+											<dd><span style="font-size: large;">{{order.Status | status}}</span></dd>
+										</dl>
 									</div>
-										<h4 class="media-heading">
-											<b>Order Id : {{order.id}}&nbsp;</b>
-											<button type="button" class="btn btn-success btn-sm"
-												ng-click="AddLineItem(item)">Add Item</button>
-										</h4>
-										<p style="font-size: 10pt;">
-											<b>Order Placed On : </b>{{order.OrderPlacementTime | date:'medium'}}<br> <b>UnitPrice
-												:</b> {{order.UnitPrice | currency:"USD$"}}
-												<br> <b>Order Pickup Time
-												:</b> {{order.PickUpTime | date:'medium'}}
-										</p>
-									</div></li> -->
-							</ul>
+									<div class="col-md-4">
+									<div class="row">
+									<div class="col-md-12"><span style="font-size: x-large;;">
+									<b>Total </b>{{order.TotalPrice |  currency:"USD $"}}</span></div>
+									</div>
+									<div class="row" ng-show="order.Status == 'C'">
+									<div class="col-md-12"><button type="button" class="btn btn-danger">Cancel</button></div>
+									</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

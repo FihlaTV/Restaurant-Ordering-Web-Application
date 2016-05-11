@@ -96,7 +96,7 @@
 											</h4>
 											<p style="font-size: 10pt;">
 												<b>Calories : </b>{{item.Calories}} KCals<br> <b>UnitPrice
-													:</b> {{item.UnitPrice | currency:"USD$"}}
+													:</b> {{item.UnitPrice | currency:"USD $"}}
 											</p>
 										</div></li>
 								</div>
@@ -127,7 +127,7 @@
 														<b>{{item.ItemName}}&nbsp;</b>
 													</h3>
 													<p style="font-size: 10pt;">
-														<b>Calories : </b>{{item.Calories}} <br>
+														<b>Calories : </b>{{item.Calories}}  KCals<br>
 													</p>
 												</div>
 												<div class="col-md-6 text-right">

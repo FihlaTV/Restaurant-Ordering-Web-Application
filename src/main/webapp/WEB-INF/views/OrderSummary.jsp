@@ -55,14 +55,15 @@
 					<div class="row"></div>
 				</div>
 			</div>
-			
-			
+
+
 			<div class="row">
 				<div class="col-md-12 text-left">
 					<div class="text-left well well-sm"
 						style="background: rgba(255, 255, 255, 0.9);">
-						<center><h4>Your order has been placed !!</h4>
-						<b><h4>Order Id</b>
+						<center>
+							<h4>Your order has been placed !!</h4>
+							<b><h4>${order.orderId}</b>
 						</center>
 					</div>
 				</div>
@@ -71,13 +72,20 @@
 				<div class="col-md-12 text-left">
 					<div class="text-left well well-sm"
 						style="background: rgba(255, 255, 255, 0.9);">
-						<center><h4>The Order Includes</h4>
-						
+						<center>
+							<h4>The Order Includes</h4>
+							<ul class="list-group">
+							<c:forEach var="orderItem" items="${order.orderItems}">
+								<li class="list-group-item"><span class="badge">${orderItem.quantity}</span>
+									<h5>${orderItem.itemName}</h5>    Price - ${orderItem.unitPrice} Quantity-</li>
+							</c:forEach>
+							</ul>
+	
 						</center>
 					</div>
 				</div>
 			</div>
-			
+
 		</div>
 	</div>
 </body>

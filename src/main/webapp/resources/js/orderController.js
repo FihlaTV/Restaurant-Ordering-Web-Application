@@ -1,10 +1,23 @@
 var FoodOrderApp = angular.module('FoodOrderApp', ['angular.filter']);
+FoodOrderApp.filter('datetime', function($filter)
+		{
+		 return function(input)
+		 {
+		  if(input == null){ return ""; } 
+		 
+		  var _date = $filter('date')(new Date(input),
+		                              'HH:mm a MMM dd yyyy');
+		 
+		  return _date.toUpperCase();
+
+		 };
+		});
 FoodOrderApp.config(function( $compileProvider ) {   
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|blob):|data:image\//);
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|file|ftp|blob):|data:image\//);
   }
 );
-FoodOrderApp.controller('OrderController', function($scope, $http) {
+FoodOrderApp.controller('OrderController', function($scope, $http ) {
 	
 	$scope.csrfToken = {};
 	$scope.items = [];

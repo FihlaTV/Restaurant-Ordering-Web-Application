@@ -63,7 +63,7 @@
 						style="background: rgba(255, 255, 255, 0.9);">
 						<center>
 							<h4>Your order has been placed !!</h4>
-							<b><h4>${order.orderId}</b>
+							<b><h4>Order Id - ${order.orderId}</b>
 						</center>
 					</div>
 				</div>
@@ -75,9 +75,11 @@
 						<center>
 							<h4>The Order Includes</h4>
 							<ul class="list-group">
+							<c:set var="total" value="${0}"/>
 							<c:forEach var="orderItem" items="${order.orderItems}">
-								<li class="list-group-item"><span class="badge">${orderItem.quantity}</span>
-									<h5>${orderItem.itemName}</h5>    Price - ${orderItem.unitPrice} Quantity-</li>
+								<li class="list-group-item"><span class="badge">Qty - ${orderItem.quantity}</span>
+									<h4><b>${orderItem.itemName}</b></h4>    <h5>Price - ${orderItem.unitPrice} $</h5> </li>
+									 <c:set var="total" value="${total + orderItem.unitPrice*orderItem.quantity}" />
 							</c:forEach>
 							</ul>
 	
@@ -85,7 +87,18 @@
 					</div>
 				</div>
 			</div>
-
+			
+			<div class="row">
+				<div class="col-md-12 text-left">
+					<div class="text-left well well-sm"
+						style="background: rgba(255, 255, 255, 0.9);">
+						<center>
+						 <h2>Total Price  </h2>
+						 <h3><b><c:out value="${total}"/> $</b></h3>
+						</center>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>

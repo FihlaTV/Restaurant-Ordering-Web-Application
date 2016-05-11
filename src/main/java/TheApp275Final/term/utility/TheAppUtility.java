@@ -50,11 +50,14 @@ public class TheAppUtility {
 		for(int i=1;i<=3;i++)
 		orderMap.put(i, new ArrayList<OrderTimes>());
 		for(Order order : orderList){
+			if(order.getPipeline().getPipelineNo()==0)
+				continue;
 
 		    // fetch the list for this object's id
 		    //List<Order> temp = orderMap.get(order.getPipeline().getPipelineNo());
 			OrderTimes orderTimes = new OrderTimes(order.getOrderStartTime().toLocalTime(),order.getOrderEndTime().toLocalTime());
 			ArrayList<OrderTimes> tmp;
+			System.out.println("order.getPipeline().getPipelineNo()"+order.getPipeline().getPipelineNo());
 		    tmp = orderMap.get(order.getPipeline().getPipelineNo());
 			tmp.add(orderTimes);
 			

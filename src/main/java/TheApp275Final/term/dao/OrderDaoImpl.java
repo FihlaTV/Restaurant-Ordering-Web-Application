@@ -35,18 +35,19 @@ public class OrderDaoImpl implements OrderDao {
 		@SuppressWarnings("unchecked")
 		List<OrderItems> result = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(OrderItems.class).list();
 		return result;
-		
 	}
 	
 	@Override
 	public void resetOrders() {
-		
 		String query = "update ORDERS set status = 'C'";					
 		@SuppressWarnings("unchecked")
 		int temp = sessionFactory.getCurrentSession().createSQLQuery(query).executeUpdate();
-		
 	}
 	
-	
+	@Override
+	public void cancelOrder(int orderId) {
+		String query = "update ORDERS set status = 'C' where ORDER_ID = " + orderId;
+		int temp = sessionFactory.getCurrentSession().createSQLQuery(query).executeUpdate();
+	}
 
 }

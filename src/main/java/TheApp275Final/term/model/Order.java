@@ -38,14 +38,6 @@ public class Order {
     @Column(name="ORDER_END_TIME")
     private LocalDateTime orderEndTime;
     
-	@Override
-	public String toString() {
-		return "Order [orderId=" + orderId + ", totalProcTime=" + totalProcTime + ", pickUpTime=" + pickUpTime
-				+ ", orderStartTime=" + orderStartTime + ", orderEndTime=" + orderEndTime + ", status=" + status
-				+ ", pipeline=" + pipeline + ", orderItems=" + orderItems ;
-	}
-
-
 	@Column(name="STATUS")
     private char status;
     
@@ -57,11 +49,18 @@ public class Order {
     @JoinColumn(name="PIPELINE_ID")
     private Pipeline pipeline;
     
-    @Column(name = "ORDER_PLACEMENT_TIME", insertable = false, updatable = false)
+    @Column(name = "ORDER_PLACEMENT_TIME")
     private LocalDateTime orderPlacementTime; 
     
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order",cascade={CascadeType.ALL})
 	private List<OrderItems> orderItems;
+    
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", totalProcTime=" + totalProcTime + ", pickUpTime=" + pickUpTime
+				+ ", orderStartTime=" + orderStartTime + ", orderEndTime=" + orderEndTime + ", status=" + status
+				+ ", pipeline=" + pipeline + ", orderItems=" + orderItems ;
+	}
 
 	public Long getOrderId() {
 		return orderId;

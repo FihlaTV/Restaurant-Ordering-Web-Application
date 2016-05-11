@@ -26,10 +26,9 @@ public class CustomerService {
 	}
 	
 	@Transactional
-	public List<Order> getListOfOrder(int id){
-		List<Order> orders = customerDao.getListOfOrder(id);
+	public List<Order> getListOfOrder(long l){
+		List<Order> orders = customerDao.getListOfOrder(l);
 		return orders;
-		
 	}
-
+	
 }

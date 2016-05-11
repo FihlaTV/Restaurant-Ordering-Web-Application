@@ -30,7 +30,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		System.out.println("Updating status to p");
 		String sql = "UPDATE ORDERS SET STATUS='P' WHERE STATUS='N'"
 				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME";
-		System.out.println(sql);
+		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);		
 		query.executeUpdate();
@@ -45,7 +45,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		System.out.println("Updating status to r");
 		String sql = "UPDATE ORDERS SET STATUS='R' WHERE STATUS IN ('N','P')"
 				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME";
-		System.out.println(sql);
+		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);
 		query.executeUpdate();
@@ -60,7 +60,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		System.out.println("Updating status to f");
 		String sql = "UPDATE ORDERS SET STATUS='F' WHERE STATUS IN ('N','P','R') "
 				+ "AND DATE_SUB(NOW(), INTERVAL 7 HOUR) > PICKUP_TIME";
-		System.out.println(sql);
+		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);
 		query.executeUpdate();

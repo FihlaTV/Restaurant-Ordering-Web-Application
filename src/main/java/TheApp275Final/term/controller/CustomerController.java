@@ -270,7 +270,7 @@ public class CustomerController {
 					System.out.println(order.toString());
 					
 					//Set Response
-					String estimatedPickUpDateTime =  endTime.toString();
+					String estimatedPickUpDateTime =  PickUpTime.toString();
 					System.out.println(estimatedPickUpDateTime);
 					
 					respTemp.put("pickupdatetime", true);

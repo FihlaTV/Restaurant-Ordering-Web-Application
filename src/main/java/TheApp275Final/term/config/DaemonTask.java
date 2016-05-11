@@ -13,19 +13,15 @@ import TheApp275Final.term.dao.DaemonTaskDao;
 
 
 public class DaemonTask {
-
-	private int i = 0;
+	
 	@Autowired
 	private DaemonTaskDao  daemonTaskDao;
 	
 	@Async
 	public void doAsyncTask(){
-		
-		System.out.println(i);
 		daemonTaskDao.updateStatusToP();
 		daemonTaskDao.updateStatusToR();
 		daemonTaskDao.updateStatusToF();
-		i++;
 		
 	}
 	

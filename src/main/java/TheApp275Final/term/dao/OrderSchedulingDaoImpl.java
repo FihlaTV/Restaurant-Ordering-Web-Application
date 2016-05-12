@@ -46,11 +46,12 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 		try {
 			session.clear();
 			tx = session.beginTransaction();
-			String sql = "SELECT * FROM ORDERS where date(pickup_time)= :pickup_date";
+			String sql = "SELECT * FROM ORDERS where date(pickup_time)= :pickup_date and STATUS NOT IN (:status)";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.addEntity(Order.class);
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			query.setParameter("pickup_date", formatter.format(pickupDate));
+			query.setParameter("status", 'C');
 			List Order = query.list();
 			tx.commit();
 			session.flush();

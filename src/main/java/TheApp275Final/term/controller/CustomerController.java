@@ -351,9 +351,9 @@ public class CustomerController {
 				order.setPipeline(pipeline);
 				LocalTime startTime = slots.get(minKey).getOrderStartTime();
 				LocalTime endTime = slots.get(minKey).getOrderEndTime();
-				order.setOrderStartTime(LocalDateTime.of(LocalDate.now(),startTime));
-				order.setOrderEndTime(LocalDateTime.of(LocalDate.now(),endTime));
-				order.setPickUpTime(LocalDateTime.of(LocalDate.now(),PickUpTime));
+				order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
+				order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+				order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),PickUpTime));
 				
 				System.out.println(order.toString());
 				

@@ -26,7 +26,7 @@ public class DaemonTask {
 	}
 	
 	@Scheduled(cron="*/60 * * * * ?")
-	public void runDaemon(){	
+	public  void runDaemon(){	
 		  doAsyncTask();
 		 
 		}

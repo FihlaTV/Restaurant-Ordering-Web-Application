@@ -32,7 +32,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		String sql = "UPDATE ORDERS SET STATUS='P'"
 				+ " WHERE STATUS='N' "
 				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR)));";
+				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);		
@@ -52,7 +52,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 				+ "SET STATUS='R' "
 				+ "WHERE STATUS IN ('N','P') "
 				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR)));";
+				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);
@@ -72,7 +72,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 				+ "SET STATUS='R' "
 				+ "WHERE STATUS IN ('N','P') "
 				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR)));";
+				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);

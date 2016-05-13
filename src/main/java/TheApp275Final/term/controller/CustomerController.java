@@ -195,7 +195,7 @@ public class CustomerController {
 							LocalTime endTime = entry.getValue().getOrderEndTime();
 							order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
 							order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-							order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+							order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),LocalTime.parse(pickuptime)));
 							System.out.println(order.toString());
 							break;
 						}

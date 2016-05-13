@@ -41,11 +41,11 @@ public class OrderSchedulingDaoImpl implements OrderSchedulingDao {
 		session.save(pipe);
 		order.setPipeline(pipe);
 		session.save(order);
-		System.out.println(order.getOrderId());
+/*		System.out.println(order.getOrderId());
 		for (OrderItems item : order.getOrderItems()){
 			item.setOrder(order);
 		}
-		session.saveOrUpdate(order);
+		session.saveOrUpdate(order);*/
 		session.getTransaction().commit();
 		return true;
 	}

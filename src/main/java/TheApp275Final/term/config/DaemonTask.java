@@ -22,7 +22,6 @@ public class DaemonTask {
 		daemonTaskDao.updateStatusToP();
 		daemonTaskDao.updateStatusToR();
 		daemonTaskDao.updateStatusToF();
-		
 	}
 	
 	@Scheduled(cron="*/60 * * * * ?")

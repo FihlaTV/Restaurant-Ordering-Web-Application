@@ -133,8 +133,7 @@ public class OrderItems {
 	public String toString() {
 		return "OrderItems [orderItemId=" + orderItemId + ", itemName=" + itemName + ", category=" + category
 				+ ", unitPrice=" + unitPrice + ", calories=" + calories + ", preparationTime=" + preparationTime
-				+ ", quantity=" + quantity + ", status=" + status + ", picture=" + Arrays.toString(picture) + ", order="
-				+ order + "]";
+				+ ", quantity=" + quantity + ", status=" + status;
 	}
 	
 }

@@ -65,11 +65,11 @@ public class CustomerController {
 
 	@RequestMapping(value={"*", "/"})
 	public ModelAndView defaultUserHomePage(HttpServletResponse response) throws IOException {
-		Enumeration sessionVariables = httpSession.getAttributeNames();
+		/*Enumeration sessionVariables = httpSession.getAttributeNames();
 		while (sessionVariables.hasMoreElements()) {
 			String param = (String) sessionVariables.nextElement();
 			System.out.println("Session Variables " + param + " and Value == " + httpSession.getAttribute(param));
-		}
+		}*/
 		System.out.println("Session in Home GET PRINCIPLE" + getPrincipal());
 		Customer customer = customerService.getCustomer(getPrincipal());
 		return new ModelAndView("userhome").addObject("customer", customer);
@@ -77,11 +77,11 @@ public class CustomerController {
 	
 	@RequestMapping(value={"/newOrder"})
 	public ModelAndView newOrder(HttpServletResponse response) throws IOException {
-		Enumeration sessionVariables = httpSession.getAttributeNames();
+		/*Enumeration sessionVariables = httpSession.getAttributeNames();
 		while (sessionVariables.hasMoreElements()) {
 			String param = (String) sessionVariables.nextElement();
 			System.out.println("Session Variables " + param + " and Value == " + httpSession.getAttribute(param));
-		}
+		}*/
 		System.out.println("Session in Home GET PRINCIPLE" + getPrincipal());
 		Customer customer = customerService.getCustomer(getPrincipal());
 		return new ModelAndView("userNewOrder").addObject("customer", customer);
@@ -186,22 +186,18 @@ public class CustomerController {
 				if (slots != null) {
 					System.out.println("User Slot Feasible!!!");
 					for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
-						System.out.println(
-								"Suggested pickup time by checkFeasibiltyOfPickUpTIme is - with pipeline number - "
-										+ entry.getKey() + " Time is " + entry.getValue().toString());
-						Pipeline pipeline = null;
-						if (entry.getValue().getOrderEndTime()
-								.isBefore(TheAppUtility.convertStringToLocalTime(pickuptime))
-								|| entry.getValue().getOrderEndTime()
-										.equals(TheAppUtility.convertStringToLocalTime(pickuptime))) {
-						order.setPipeline(pipeline);
-						LocalTime startTime = entry.getValue().getOrderStartTime();
-						LocalTime endTime = entry.getValue().getOrderEndTime();
-						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
-						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-						System.out.println(order.toString());
-						break;
+						System.out.println(	"Suggested pickup time by checkFeasibiltyOfPickUpTIme is - with pipeline number - "	+ entry.getKey() + " Time is " + entry.getValue().toString());
+						Pipeline pipeline = TheAppUtility.getPipeline(entry.getKey());
+						if (entry.getValue().getOrderEndTime().isBefore(TheAppUtility.convertStringToLocalTime(pickuptime))
+								|| entry.getValue().getOrderEndTime().equals(TheAppUtility.convertStringToLocalTime(pickuptime))) {
+							order.setPipeline(pipeline);
+							LocalTime startTime = entry.getValue().getOrderStartTime();
+							LocalTime endTime = entry.getValue().getOrderEndTime();
+							order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
+							order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+							order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+							System.out.println(order.toString());
+							break;
 						}
 					}
 					respTemp.put("pickupdatetime", true);
@@ -510,8 +506,9 @@ public class CustomerController {
 			if (orderItems != null && orderItems.size() > 0) {
 				Iterator<OrderItems> orditm = orderItems.iterator();
 				while (orditm.hasNext()) {
-					OrderItems s = orditm.next();
-					if (request.getParameter("item[ItemName]").equals(s.getItemName())) {
+					OrderItems orderitm = orditm.next();
+					if (request.getParameter("item[ItemName]").equals(orderitm.getItemName())) {
+						orderitm.setOrder(null);
 						orditm.remove();
 						break;
 					}
@@ -567,8 +564,12 @@ public class CustomerController {
 
 	@RequestMapping(value = "/addLineItem", method = RequestMethod.POST)
 	public void addLineItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		//Create the Response JSON Array
 		JSONArray jsonArray = new JSONArray();
+		
+		//Get the Order from the Session
 		Order order = (Order) httpSession.getAttribute("Order");
+		
 		if (order != null) {
 
 			List<OrderItems> orderItems = order.getOrderItems();
@@ -619,7 +620,7 @@ public class CustomerController {
 
 			System.out.println(jsonOrderItm.toString());
 
-			// Check if Item is Existing
+			// Check if Item is Existing in the order
 			for (OrderItems orderItem : orderItems) {
 				if (request.getParameter("item[ItemName]").equals(orderItem.getItemName())) {
 					int qty = orderItem.getQuantity();
@@ -638,29 +639,29 @@ public class CustomerController {
 				String category = (String) jsonOrderItm.get("Category");
 				String ItemName = (String) jsonOrderItm.get("ItemName");
 				float unitPrice = Float.parseFloat((String) jsonOrderItm.get("UnitPrice"));
-				/*
-				 * byte[] picture = null; if(jsonOrderItm.get("Picture") !=
-				 * null){ picture = (byte[]) jsonOrderItm.get("Picture"); }
-				 */
 				int preparationTime = Integer.valueOf((String) jsonOrderItm.get("PreparationTime"));
 				int quantity = (int) jsonOrderItm.get("Quantity");
 
 				OrderItems orderitm = new OrderItems();
+				orderitm.setOrder(order);
 				orderitm.setCalories(calories);
 				orderitm.setCategory(category);
 				orderitm.setItemName(ItemName);
-				// orderitm.setPicture(picture);
 				orderitm.setPreparationTime(preparationTime);
 				orderitm.setUnitPrice(unitPrice);
 				orderitm.setQuantity(quantity);
-
+				
+				//Add the Item to the OrderItems List
 				orderItems.add(orderitm);
-
+				
+				//Set the Order Items back to the Order
 				order.setOrderItems(orderItems);
 
+				//Update the order on the session
 				httpSession.setAttribute("Order", order);
 			}
 
+			//Generate the Response
 			if (orderItems != null && orderItems.size() > 0) {
 				for (OrderItems orderItem : orderItems) {
 					JSONObject jsonOrderItem = new JSONObject();
@@ -674,6 +675,8 @@ public class CustomerController {
 				}
 			}
 		}
+		
+		//Send the Response
 		response.setContentType("application/json");
 		response.getWriter().write(jsonArray.toString());
 	}

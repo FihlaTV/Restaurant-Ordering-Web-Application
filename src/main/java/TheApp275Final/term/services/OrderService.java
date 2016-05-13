@@ -36,19 +36,23 @@ public class OrderService implements IOrderService{
 		return orderProcessingTime;
 	}
 	
+	@Transactional
 	public List<Order> getOrderReport(String startTime, String endTime, String sortBy){
 		return orderDao.getOrderReport(startTime, endTime, sortBy);
 	}
 	
+	@Transactional
 	public List<OrderItems> getPopularityReport(String startTime, String endTime) {
 		return orderDao.getPopularityReport(startTime, endTime);
 	}
 	
+	@Transactional
 	public void resetOrders(){
 		orderDao.resetOrders();
 	}
 	
 	@Override
+	@Transactional
 	public void cancelOrder(int orderId) {
 		orderDao.cancelOrder(orderId);
 	}

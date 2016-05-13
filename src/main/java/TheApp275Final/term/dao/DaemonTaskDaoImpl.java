@@ -28,8 +28,11 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 	public void updateStatusToP() {
 		session.clear();
 		Transaction tx = session.beginTransaction();
-		System.out.println("Updating status to p");
-		String sql = "UPDATE ORDERS SET STATUS='P' WHERE STATUS='N'"
+		System.out.println("Updating status to Preparing");
+		String sql = "UPDATE ORDERS SET STATUS='P'"
+				+ " WHERE"
+				+ " "
+				+ " STATUS='N'"
 				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
@@ -37,7 +40,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		query.executeUpdate();
 		tx.commit();
 		session.flush();
-		System.out.println("Updated status to P");
+		System.out.println("Updated status to Preparing!!!");
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 	public void updateStatusToR() {
 		session.clear();
 		Transaction tx = session.beginTransaction();
-		System.out.println("Updating status to r");
+		System.out.println("Updating status to  Ready for Pickup");
 		String sql = "UPDATE ORDERS SET STATUS='R' WHERE STATUS IN ('N','P')"
 				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME";
 		//System.out.println(sql);
@@ -53,7 +56,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		query.addEntity(Order.class);
 		query.executeUpdate();
 		tx.commit();
-		System.out.println("Updated status to R");
+		System.out.println("Updated status to Ready for Pickup");
 		session.flush();
 	}
 
@@ -62,7 +65,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 	public void updateStatusToF() {
 		session.clear();
 		Transaction tx = session.beginTransaction();
-		System.out.println("Updating status to f");
+		System.out.println("Updating status to Fulfilled");
 		String sql = "UPDATE ORDERS SET STATUS='F' WHERE STATUS IN ('N','P','R') "
 				+ "AND DATE_SUB(NOW(), INTERVAL 7 HOUR) > PICKUP_TIME";
 		//System.out.println(sql);
@@ -70,7 +73,7 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		query.addEntity(Order.class);
 		query.executeUpdate();
 		tx.commit();
-		System.out.println("Updated status to F");
+		System.out.println("Updated status to Fulfilled");
 		session.flush();
 	}
 

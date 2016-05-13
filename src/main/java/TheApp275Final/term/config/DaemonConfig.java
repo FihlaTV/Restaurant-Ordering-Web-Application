@@ -11,8 +11,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
-/*@EnableAsync
-@EnableScheduling*/
+@EnableAsync
+@EnableScheduling
 public class DaemonConfig implements AsyncConfigurer {
 
 	@Bean

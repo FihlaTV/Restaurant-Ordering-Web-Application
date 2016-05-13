@@ -21,10 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
-	@Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 	
 	@Autowired
 	MyAccessDeniedHandler myAccessDeniedHandler;
@@ -39,15 +35,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	DataSource dataSource;
 	
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
 	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(passwordEncoder)
+		auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(passwordEncoder())
 		.usersByUsernameQuery("select username,password, enabled from users where username=?")
 		.authoritiesByUsernameQuery("select username, role from user_roles where username=?");
 	}
-
+    
+	@Bean
+	public PasswordEncoder passwordEncoder(){
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		return encoder;
+	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()

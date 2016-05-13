@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -37,9 +38,9 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		try{
 			//Get List of Orders and Send Confirmation Mails to all of them
 			String selectQuery = "Select * FROM ORDERS"
-					+ " WHERE STATUS='N' "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+					+ " WHERE"
+					+ " STATUS='N'"
+					+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME";
 			SQLQuery selectquery = session.createSQLQuery(selectQuery);
 			selectquery.addEntity(Order.class);
 			List<Order> orders = selectquery.list();
@@ -56,14 +57,16 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to Preparing");
-		/*String sql = "UPDATE ORDERS SET STATUS='P'"
-				+ " WHERE STATUS='N' "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";*/
 		String sql = "UPDATE ORDERS SET STATUS='P'"
+<<<<<<< HEAD
+				+ " WHERE"
+				+ " STATUS='N'"
+				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME";
+=======
 				+ " WHERE STATUS='N' "
 				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
 				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+>>>>>>> 5d440f83421ed6ad3321fa21965e8f13e2cb58cb
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);		
@@ -83,9 +86,8 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		try{
 			//Get List of Orders and Send Confirmation Mails to all of them
 			String selectQuery =  "Select * FROM ORDERS"
-				+ " WHERE STATUS IN ('N','P') "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+					+ " WHERE STATUS IN ('N','P')"
+					+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME";
 			SQLQuery selectquery = session.createSQLQuery(selectQuery);
 			selectquery.addEntity(Order.class);
 			List<Order> orders = selectquery.list();

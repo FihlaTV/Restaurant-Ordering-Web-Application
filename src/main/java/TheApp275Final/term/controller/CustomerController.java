@@ -36,6 +36,7 @@ import TheApp275Final.term.model.Order;
 import TheApp275Final.term.model.OrderItems;
 import TheApp275Final.term.model.Pipeline;
 import TheApp275Final.term.services.CustomerService;
+import TheApp275Final.term.services.EmailService;
 import TheApp275Final.term.services.IOrderService;
 import TheApp275Final.term.services.ItemService;
 import TheApp275Final.term.services.OrderSchedulingService;
@@ -59,6 +60,9 @@ public class CustomerController {
 
 	@Autowired
 	IOrderService orderService;
+	
+	@Autowired
+	EmailService emailService;
 
 	@Autowired
 	OrderSchedulingService orderSchedulingService;
@@ -456,6 +460,9 @@ public class CustomerController {
 			// This will return true after the saving the order
 			orderSchedulingService.saveOrder(order);
 			
+			//Send the Confirmation Email to the Customer
+			emailService.sendOrderConfirmationMail(customer, order);
+			
 			// Create An Order and Attach To Session
 			if (httpSession.getAttribute("Order") != null) {
 				Order newOrder = new Order();
@@ -463,6 +470,7 @@ public class CustomerController {
 				newOrder.setOrderItems(orderItems);
 				httpSession.setAttribute("Order", null);
 			}
+
 			return new ModelAndView("OrderSummary","order",order);
 		} catch (Exception e) {
 			System.out.println("Error::submitOrder::"+e.getMessage());

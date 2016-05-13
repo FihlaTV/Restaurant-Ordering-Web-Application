@@ -24,7 +24,7 @@ public class DaemonTask {
 		daemonTaskDao.updateStatusToF();
 	}
 	
-	@Scheduled(cron="*/60 * * * * ?")
+	@Scheduled(cron="*/30 * * * * ?")
 	public  void runDaemon(){	
 		  doAsyncTask();
 		 

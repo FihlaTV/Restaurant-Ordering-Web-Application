@@ -30,10 +30,9 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to Preparing");
 		String sql = "UPDATE ORDERS SET STATUS='P'"
-				+ " WHERE"
-				+ " "
-				+ " STATUS='N'"
-				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME";
+				+ " WHERE STATUS='N' "
+				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
+				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR)));";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);		
@@ -49,8 +48,11 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to  Ready for Pickup");
-		String sql = "UPDATE ORDERS SET STATUS='R' WHERE STATUS IN ('N','P')"
-				+ " AND DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME";
+		String sql = "UPDATE ORDERS "
+				+ "SET STATUS='R' "
+				+ "WHERE STATUS IN ('N','P') "
+				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
+				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR)));";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);
@@ -66,8 +68,11 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to Fulfilled");
-		String sql = "UPDATE ORDERS SET STATUS='F' WHERE STATUS IN ('N','P','R') "
-				+ "AND DATE_SUB(NOW(), INTERVAL 7 HOUR) > PICKUP_TIME";
+		String sql = "UPDATE ORDERS "
+				+ "SET STATUS='R' "
+				+ "WHERE STATUS IN ('N','P') "
+				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
+				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR)));";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);

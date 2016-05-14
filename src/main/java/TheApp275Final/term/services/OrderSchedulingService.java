@@ -11,7 +11,6 @@ import TheApp275Final.term.model.Order;
 @Service
 public interface OrderSchedulingService {
 
-	public void testInputdata();
 	public boolean saveOrder(Order order);
 	public boolean checkPickUpTime(String pickUpTime);
 	public boolean checkPickUpDate(Date pickUpDate);

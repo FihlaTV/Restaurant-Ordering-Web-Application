@@ -42,69 +42,6 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	private OrderSchedulingDao orderSchedulingDao;
 
 	@Override
-	@Transactional
-	public void testInputdata() {
-		for (int i = 0; i < 10; i = i + 2) {
-			Order order1 = new Order();
-			Pipeline pipe = new Pipeline1();
-			order1.setStatus('N');
-			order1.setOrderEndTime(LocalDateTime.now().plusMinutes(i * 10 + 10));
-			order1.setOrderStartTime(LocalDateTime.now().plusMinutes(i * 10));
-			order1.setPickUpTime(LocalDateTime.now().plusMinutes(i * 10 + 10)); //
-			order1.setPipeline(pipe);
-			order1.setTotalProcTime(10);
-			orderSchedulingDao.saveOrder(order1, pipe);
-		}
-		for (int i = 0; i < 10; i = i + 2) {
-			Order order1 = new Order();
-			Pipeline pipe = new Pipeline2();
-			order1.setStatus('N');
-			order1.setOrderEndTime(LocalDateTime.now().plusMinutes(i * 30 + 30));
-			order1.setOrderStartTime(LocalDateTime.now().plusMinutes(i * 30));
-			order1.setPickUpTime(LocalDateTime.now().plusMinutes(i * 30 + 30)); //
-			order1.setPipeline(pipe);
-			order1.setTotalProcTime(30);
-			orderSchedulingDao.saveOrder(order1, pipe);
-		}
-
-		for (int i = 0; i < 10; i = i + 2) {
-			Order order1 = new Order();
-			Pipeline pipe = new Pipeline3();
-			order1.setStatus('N');
-			order1.setOrderEndTime(LocalDateTime.now().plusMinutes(i * 20 + 20));
-			order1.setOrderStartTime(LocalDateTime.now().plusMinutes(i * 20));
-			order1.setPickUpTime(LocalDateTime.now().plusMinutes(i * 20 + 20)); //
-			order1.setPipeline(pipe);
-			order1.setTotalProcTime(20);
-			orderSchedulingDao.saveOrder(order1, pipe);
-		}
-
-		/*
-		 * Order order1 = new Order(); Pipeline pipe = new Pipeline1();
-		 * order1.setStatus('N');
-		 * order1.setOrderEndTime(LocalDateTime.of(2016,5, 8, 05, 00));
-		 * order1.setOrderStartTime(LocalDateTime.of(2016,5, 8, 04, 20));
-		 * order1.setPickUpTime(LocalDateTime.of(2016,5, 8, 06, 00)); //
-		 * order1.setPipeline(pipe); order1.setTotalProcTime(40);
-		 * orderSchedulingDao.saveOrder(order1, pipe);
-		 */
-		/*
-		 * Order order2 = new Order(); Pipeline pipe1 = new Pipeline2();
-		 * order2.setStatus('N'); order2.setOrderEndTime(LocalDateTime.of(2016,
-		 * 5, 8, 05, 00)); order2.setOrderStartTime(LocalDateTime.of(2016, 5, 8,
-		 * 04, 20)); order2.setPickUpTime(LocalDateTime.of(2016, 5, 8, 06, 00));
-		 * // order1.setPipeline(pipe); order2.setTotalProcTime(40);
-		 * orderSchedulingDao.saveOrder(order2, pipe1); Order order3 = new
-		 * Order(); Pipeline pipe2 = new Pipeline3(); order3.setStatus('N');
-		 * order3.setOrderEndTime(LocalDateTime.of(2016, 5, 8, 05, 00));
-		 * order3.setOrderStartTime(LocalDateTime.of(2016, 5, 8, 04, 20));
-		 * order3.setPickUpTime(LocalDateTime.of(2016, 5, 8, 06, 00)); //
-		 * order1.setPipeline(pipe); order3.setTotalProcTime(40);
-		 * orderSchedulingDao.saveOrder(order3, pipe2);
-		 */
-	}
-
-	@Override
 	public boolean checkPickUpTime(String pickUpTime) {
 		LocalTime time = TheAppUtility.convertStringToLocalTime(pickUpTime);
 		System.out.println("pick up time is " + time.toString());
@@ -309,7 +246,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	@Override
 	public boolean checkPickUpDate(Date pickUpDate) {
 		LocalDate pickUpDateOnly = LocalDateTime.ofInstant(pickUpDate.toInstant(), ZoneId.systemDefault()).toLocalDate();
-		if(pickUpDateOnly.equals(LocalDate.now()) || (pickUpDateOnly.isAfter(LocalDate.now()) && pickUpDateOnly.isBefore(LocalDate.now().plusDays(29)))){
+		if(pickUpDateOnly.equals(LocalDate.now()) || (pickUpDateOnly.isAfter(LocalDate.now()) && pickUpDateOnly.isBefore(LocalDate.now().plusDays(30)))){
 			System.out.println("date is valid");
 			return true;
 		}

@@ -32,7 +32,7 @@ public class EmailService {
 		htmlMessage = htmlMessage.replace("XXXX", customer.getFirstname());
 		htmlMessage = htmlMessage.replace("YYYYYY", customer.getLastname());
 		htmlMessage = htmlMessage.replace("ZZZZZZZ", customer.getUserAccessCode());
-		htmlMessage = htmlMessage.replace("WWWWWW", "http://localhost:8080/term/activateaccount");
+		htmlMessage = htmlMessage.replace("WWWWWW", "http://ec2-52-33-41-84.us-west-2.compute.amazonaws.com:8080/term/activateaccount");
 		htmlMessage = htmlMessage.replace("BBBBB", customer.getUsername());
 
 		sendEmail(htmlMessage, customer.getUsername(), "CMPE 275 - Complete Account Activation");

@@ -1,6 +1,7 @@
 package TheApp275Final.term.config;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 		
 		switch (exception.getMessage()) {
 		case "User is disabled":
-			targetUrl = "/activateaccount?error&errormsg=Please Activate Your Account before Logging-In!!";
+			targetUrl = "/activateaccount?error&errormsg=Please_Activate_Your_Account_before_Logging-In!!";
 			break;
 			
 		case "Bad credentials":

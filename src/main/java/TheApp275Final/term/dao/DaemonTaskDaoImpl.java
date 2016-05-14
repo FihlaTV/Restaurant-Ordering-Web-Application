@@ -36,10 +36,10 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		//Send the Confirmation Email to the Customer.
 		try{
 			//Get List of Orders and Send Confirmation Mails to all of them
-			String selectQuery = "Select * FROM ORDERS"
-					+ " WHERE STATUS='N' "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+			String selectQuery = "Select * FROM ORDERS "
+					+ "WHERE STATUS='N' "
+					+ "AND (NOW() BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
+					+ "AND (DATE(PICKUP_TIME) = DATE(NOW())) AND STATUS NOT IN ('C');";
 			SQLQuery selectquery = session.createSQLQuery(selectQuery);
 			selectquery.addEntity(Order.class);
 			List<Order> orders = selectquery.list();
@@ -60,10 +60,10 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 				+ " WHERE STATUS='N' "
 				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
 				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";*/
-		String sql = "UPDATE ORDERS SET STATUS='P'"
-				+ " WHERE STATUS='N' "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+		String sql = "UPDATE ORDERS SET STATUS='P' "
+				+ "WHERE STATUS='N' "
+				+ "AND (NOW() BETWEEN ORDER_START_TIME AND ORDER_END_TIME ) "
+				+ "AND (DATE(PICKUP_TIME) = DATE(NOW())) AND STATUS NOT IN ('C');";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);		
@@ -101,11 +101,10 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		session.clear();
 		Transaction tx = session.beginTransaction();
 		System.out.println("Updating status to  Ready for Pickup");
-		String sql = "UPDATE ORDERS "
-				+ "SET STATUS='R' "
+		String sql = "UPDATE ORDERS SET STATUS='R' "
 				+ "WHERE STATUS IN ('N','P') "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+				+ "AND (NOW() BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
+				+ "AND (DATE(PICKUP_TIME) = DATE(NOW())) AND STATUS NOT IN ('C');";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);
@@ -125,9 +124,8 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		System.out.println("Updating status to Fulfilled");
 		String sql = "UPDATE ORDERS SET STATUS='F' "
 				+ "WHERE STATUS IN ('N','P','R') "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) > PICKUP_TIME)  "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) "
-				+ "AND STATUS NOT IN ('C');";
+				+ "AND (NOW() > PICKUP_TIME) "
+				+ "AND (DATE(PICKUP_TIME) = DATE(NOW())) AND STATUS NOT IN ('C');";
 		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.addEntity(Order.class);

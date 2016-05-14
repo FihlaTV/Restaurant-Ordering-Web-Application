@@ -34,7 +34,7 @@ FoodOrderApp.controller('HomeController', function($scope, $http) {
 	$scope.init = function(name, token) {
 		$scope.csrfToken.name = name;
 		$scope.csrfToken.token = token;
-		//$scope.getOrderHistory();
+		$scope.getOrderHistory();
 		$scope.getRatingDetails();
 	}
 	

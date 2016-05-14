@@ -44,7 +44,23 @@ public class Item implements Serializable {
     	
     }
 
-    /*Getters and Setters of the profile variables*/
+    public Item(long id, String itemName, String category, float unitPrice, int calories, int preparationTime,
+			boolean status, byte[] picture, List<ItemRating> ratings) {
+		super();
+		this.id = id;
+		this.itemName = itemName;
+		this.category = category;
+		this.unitPrice = unitPrice;
+		this.calories = calories;
+		this.preparationTime = preparationTime;
+		this.status = status;
+		this.picture = picture;
+		this.ratings = ratings;
+	}
+
+
+
+	/*Getters and Setters of the profile variables*/
     public long getId() {
 		return id;
 	}

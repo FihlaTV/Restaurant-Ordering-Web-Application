@@ -44,13 +44,72 @@
 	</header>
 
 <div class="container">
-    <table class="table">
+	<form ng-submit="getData()">
+	<div class="row" style="padding-bottom: 5px">
+		<div class="col-md-2">
+			Start Date
+		</div>
+		<div class="col-md-8">
+			<input required type='date' ng-model="fromDate" value="2016-05-01"/>
+              <input required  type='time'  ng-model="fromTime" value="00:00:00"/>
+		</div>
+		
+	</div>
+	<div class="row" style="padding-bottom: 5px">
+		<div class="col-md-2">
+			End Date
+		</div>
+		<div class="col-md-8">
+			<input required type='date' ng-model="toDate" value="2016-05-20" />
+                <input required type='time' ng-model="toTime" value="00:00:00"/>
+		</div>
+		
+	</div>
+	<div class="row" style="padding-bottom: 10px">
+		<div class="col-md-2">
+		<input type="submit" value="Submit">
+		</div>
+	</div>
+	</form>
+	
+	<div class="row" ng-show="items" >
+	<h4>
+		<div class="col-md-2">
+			Category
+		</div>
+		<div class="col-md-2">
+			Item Name
+		</div>
+		<div class="col-md-2">
+			Item Count
+		</div>
+	</h4>
+	<hr style="width: 100%; color: black; height: 1px; background-color:black;" />
+	</div>
+	
+	<div class="row" ng-repeat="item in items">
+		<div class="col-md-2">
+			{{item.category}}
+		</div>
+		<div class="col-md-4">
+			<div class="row" ng-repeat="details in item.items">
+				<div class="col-md-6">
+					{{details.itemName}}
+				</div>
+				<div class="col-md-4">
+					{{details.count}}
+				</div>
+			</div>
+		</div>
+		<hr style="width: 100%; color: black; height: 1px; background-color:black;" />
+	</div>
+  <!--   <table class="table">
     <form ng-submit="getData()">
     	<tr>
     		<td>Start Date</td>
     		<td>
-    			<input required type='date' ng-model="fromDate" value="2016-05-01"/>
-                <input required  type='time'  ng-model="fromTime" value="00:00:00"/>
+    			<input required type='date' ng-model="toDate" value="2016-05-20" />
+                <input required type='time' ng-model="toTime" value="00:00:00"/>
     		</td>
     	</tr>
     	
@@ -67,7 +126,7 @@
     		</td>
     	</tr>
     	</form>
-    </table>
+    </table> 
      
      <table class="table">
 		<tr>
@@ -86,7 +145,7 @@
 			 
 			</ul>
 		</tr>
-	</table>          
+	</table> -->          
     
 </div>
 </body>

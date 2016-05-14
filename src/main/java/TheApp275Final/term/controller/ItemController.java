@@ -55,13 +55,38 @@ public class ItemController {
 	public ModelAndView getAllItems(HttpServletResponse response, Model model) throws IOException{
 		response.setContentType("application/json");
 		List<Item> itemList = itemService.getAllItems();
-		for(Item item : itemList){
-			item.setPicture(null);
+//		for(Item item : itemList){
+//			item.setPicture(null);
+//		}
+		JSONArray jsonArray = new JSONArray();
+		for(Item item:itemList){
+			JSONObject temp = new JSONObject();
+			temp.put("itemName", item.getItemName());
+			temp.put("category", item.getCategory());
+			temp.put("calories",item.getCalories());
+			temp.put("id",item.getId());
+			temp.put("preparationTime",item.getPreparationTime());
+			temp.put("unitPrice",item.getUnitPrice());
+			temp.put("status", item.isStatus());
+			jsonArray.put(temp);
 		}
-		model.addAttribute("items", new Gson().toJson(itemList));
+		model.addAttribute("items", jsonArray);
+//		model.addAttribute("items", new Gson().toString(itemList));
 		model.addAttribute("categories", new Gson().toJson(category));
 		return new ModelAndView("items");
 	}
+	
+//	@RequestMapping(value={"/admin/getAllItems","/admin/"})
+//	public ModelAndView getAllItems(HttpServletResponse response, Model model) throws IOException{
+//		response.setContentType("application/json");
+//		List<Item> itemList = itemService.getAllItems();
+//		for(Item item : itemList){
+//			item.setPicture(null);
+//		}
+//		model.addAttribute("items", new Gson().toJson(itemList));
+//		model.addAttribute("categories", new Gson().toJson(category));
+//		return new ModelAndView("items");
+//	}
 	
 	@RequestMapping(value="/admin/deleteItem", method = RequestMethod.POST)
 	public ModelAndView deleteItem(HttpServletRequest request) throws IOException{

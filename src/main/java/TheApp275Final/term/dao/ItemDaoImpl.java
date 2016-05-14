@@ -26,9 +26,9 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public List<Item> getAllItems() {
+		String query = "select * from item order by category";
 		@SuppressWarnings("unchecked")
-		List<Item> result = sessionFactory.getCurrentSession().createCriteria(Item.class)
-				.addOrder(Order.asc("category")).list();
+		List<Item> result = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Item.class).list();
 		return result;
 	}
 
@@ -43,6 +43,7 @@ public class ItemDaoImpl implements ItemDao {
 	@Override
 	public void deleteItem(Item item) {
 		String query = "update item set status = ? where id = ?";
+		System.out.println("id:"+item.getId()+" stat:"+item.isStatus());
 		sessionFactory.getCurrentSession().createSQLQuery(query).setParameter(0, item.isStatus()).setParameter(1, item.getId()).executeUpdate();
 	}
 

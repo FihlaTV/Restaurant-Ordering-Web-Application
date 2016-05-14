@@ -43,7 +43,6 @@ public class LoginSucessHandler extends SimpleUrlAuthenticationSuccessHandler {
     	
     	//Update the Session to Store The Customer Object
     	HttpSession session = request.getSession();
-    	//session.invalidate();
     	session.setAttribute("username",username);
     	session = request.getSession(true);
     	if(username != null && username != ""){
@@ -79,9 +78,7 @@ public class LoginSucessHandler extends SimpleUrlAuthenticationSuccessHandler {
             roles.add(a.getAuthority());
         }
  
-        if (isDba(roles)) {
-            url = "/db";
-        } else if (isAdmin(roles)) {
+        if (isAdmin(roles)) {
             url = "/admin/getAllItems";
         } else if (isUser(roles)) {
             url = "/user/";
@@ -101,13 +98,6 @@ public class LoginSucessHandler extends SimpleUrlAuthenticationSuccessHandler {
  
     private boolean isAdmin(List<String> roles) {
         if (roles.contains("ROLE_ADMIN")) {
-            return true;
-        }
-        return false;
-    }
- 
-    private boolean isDba(List<String> roles) {
-        if (roles.contains("ROLE_DBA")) {
             return true;
         }
         return false;

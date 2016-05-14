@@ -28,7 +28,7 @@ public class LoginServices {
 			if (customerDao.saveCustomer(customer) == 0) {
 				statusCode = 0;
 			} else {
-				emailService.sendCustomerConfirmationMail(customer);
+				emailService.sendCustomerRegistrationConfirmationMail(customer);
 				statusCode = 1;
 			}
 		} catch (Exception e) {

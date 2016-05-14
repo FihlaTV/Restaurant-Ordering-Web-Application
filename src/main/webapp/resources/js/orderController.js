@@ -237,34 +237,39 @@ FoodOrderApp
 						console.log("submitOrder!!");
 						if ($scope.order.pickupdate == document
 								.getElementById("pickupdate").value) {
-							var xsrf = $.param({
-								_csrf : $scope.csrfToken.token
-							});
-							$http(
-									{
-										method : 'POST',
-										url : './submitOrder',
-										data : xsrf,
-										headers : {
-											'Content-Type' : 'application/x-www-form-urlencoded'
-										},
-										withCredentials : true
-									})
-									.success(
-											function(data, status, headers,
-													config) {
-												console.log(data);
-												$scope.cartItems = data;
-												console
-														.log("Menu Item Removed to Cart!!");
-											})
-									.error(
-											function(data, status, headers,
-													config) {
-												console
-														.log("Error Removed Menu Items :: "
-																+ data);
-											});
+							console.log($scope.cartItems.length);
+							if($scope.cartItems.length == 0){
+								alert("There are No Items In your Cart!!!Please Add Some Items and Then Submit the Order.")
+							}else{
+								var xsrf = $.param({
+									_csrf : $scope.csrfToken.token
+								});
+								$http(
+										{
+											method : 'POST',
+											url : './submitOrder',
+											data : xsrf,
+											headers : {
+												'Content-Type' : 'application/x-www-form-urlencoded'
+											},
+											withCredentials : true
+										})
+										.success(
+												function(data, status, headers,
+														config) {
+													console.log(data);
+													$scope.cartItems = data;
+													console
+															.log("Menu Item Removed to Cart!!");
+												})
+										.error(
+												function(data, status, headers,
+														config) {
+													console
+															.log("Error Removed Menu Items :: "
+																	+ data);
+												});	
+							}
 						} else {
 							$scope.order.submit = false;
 							alert("Pickup Date changed, Please Rerun the Validation to Check if this Solt ")

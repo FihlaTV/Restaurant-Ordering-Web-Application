@@ -239,7 +239,7 @@
 								</form>
 								<div class="col-md-6" ng-show="order.submit">
 									<input type="submit" class="btn btn-block btn-lg btn-success"
-										value="Submit Order" form="submitForm">
+										value="Submit Order" form="submitForm" ng-disabled="cartItems.length==0">
 									<!-- <a class="btn btn-block btn-lg btn-success"
 										ng-click="submitOrder()">Submit Order</a> -->
 								</div>

@@ -106,15 +106,15 @@ public class LoginController {
 		int statusCode = loginServices.createCustomer(customer);
 
 		if (statusCode == 0) {
-			redirectUrl = "signup?signuperror&firstname=" + customer.getFirstname() + "&lastname="
-					+ customer.getLastname();
-			redirectUrl += "&signuperrormsg=Username is already registered as part of another Account, Please use Another Username!!";
+			redirectUrl = "signup?signuperror&firstname=" + customer.getFirstname().replace(" ", "_") + "&lastname="
+					+ customer.getLastname().replace(" ", "_");
+			redirectUrl += "&signuperrormsg=Username_is_already_registered_as_part_of_another_Account,_Please_use_Another_Username!!";
 		} else if (statusCode == 1) {
 			redirectUrl = "login?signup";
 		} else {
-			redirectUrl = "signup?signuperror&firstname=" + customer.getFirstname() + "&lastname="
-					+ customer.getLastname() + "&username=" + customer.getUsername();
-			redirectUrl += "&signuperrormsg=There was an error Processing your request!!Please Try Again...";
+			redirectUrl = "signup?signuperror&firstname=" + customer.getFirstname().replace(" ", "_") + "&lastname="
+					+ customer.getLastname().replace(" ", "_") + "&username=" + customer.getUsername();
+			redirectUrl += "&signuperrormsg=There_was_an_error_Processing_your_request!!Please_Try_Again...";
 		}
 
 		response.sendRedirect(redirectUrl);
@@ -136,7 +136,7 @@ public class LoginController {
 			statusCode = loginServices.activateAccount(token, email);
 
 			if (statusCode == 0) {
-				redirectURL = "activateaccount?error&errormsg=Invalid Email Address or Expired Token Number..";
+				redirectURL = "activateaccount?error&errormsg=Invalid_Email_Address_or_Expired_Token_Number..";
 			} else {
 				redirectURL = "activateaccount?activated";
 			}

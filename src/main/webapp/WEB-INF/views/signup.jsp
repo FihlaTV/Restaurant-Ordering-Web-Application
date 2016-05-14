@@ -37,25 +37,19 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<input type="text" name="firstname" placeholder="First Name"
-								onFocus="field_focus(this, 'First Name');"
-								<c:if test="${param.firstname != null}">value="${param.firstname}"</c:if>
-								onblur="field_blur(this, 'First Name');" class="email" required />
+								<c:if test="${param.firstname != null}">value="${param.firstname}"</c:if> class="email" required />
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12">
 							<input type="text" name="lastname" placeholder="Last Name"
-								onFocus="field_focus(this, 'Last Name');"
-								<c:if test="${param.lastname != null}">value="${param.lastname}"</c:if>
-								onblur="field_blur(this, 'Last Name');" class="email" required />
+								<c:if test="${param.lastname != null}">value="${param.lastname}"</c:if> class="email" required />
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12">
 							<input type="email" name="username" placeholder="Email"
-								onFocus="field_focus(this, 'Email');"
-								<c:if test="${param.username != null}">value="${param.username}"</c:if>
-								onblur="field_blur(this, 'Email');" class="email" required />
+								<c:if test="${param.username != null}">value="${param.username}"</c:if> class="email" required />
 						</div>
 					</div>
 					<div class="row">

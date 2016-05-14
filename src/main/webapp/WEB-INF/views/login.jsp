@@ -59,18 +59,13 @@
 					id="loginForm">
 					<div class="row">
 						<div class="col-xs-12">
-							<input type="email" name="username" value="email"
-								onFocus="field_focus(this, 'email');"
-								onblur="field_blur(this, 'email');" class="email" />
+							<input type="email" name="username"	placeholder="Email" class="email" required/>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12">
-							<input type="hidden" name="${_csrf.parameterName}"
-								value="${_csrf.token}" /> <input type="password"
-								name="password" value="email"
-								onFocus="field_focus(this, 'email');"
-								onblur="field_blur(this, 'email');" class="email" />
+							<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" />
+							<input type="password"	name="password" placeholder="Password" class="email" required/>
 						</div>
 					</div>
 				</form>

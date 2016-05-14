@@ -6,6 +6,30 @@
 <title>Customer Place Order</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<style type="text/css">
+
+.star-rating {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+.star-rating .star {
+  padding: 1px;
+  color: #ddd;
+  font-size: 20px;
+  text-shadow: .05em .05em #aaa;
+  list-style-type: none;
+  display: inline-block;
+  cursor: pointer;
+}
+.star-rating .star.filled {
+  color: #fd0;
+}
+.star-rating.readonly .star.filled {
+  color: #666;
+}
+
+</style>
 <script type="text/javascript"
 	src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script type="text/javascript"
@@ -96,7 +120,7 @@
 											</h4>
 											<p style="font-size: 10pt;">
 												<b>Calories : </b>{{item.Calories}} KCals<br> <b>UnitPrice
-													:</b> {{item.UnitPrice | currency:"USD $"}}
+													:</b> {{item.UnitPrice | currency:"USD $"}}<br><span ng-hide="item.rating==0"><star-rating ng-model="item.rating" readonly="true"></star-rating></span>
 											</p>
 										</div></li>
 								</div>
@@ -127,7 +151,7 @@
 														<b>{{item.ItemName}}&nbsp;</b>
 													</h3>
 													<p style="font-size: 10pt;">
-														<b>Calories : </b>{{item.Calories}}  KCals<br>
+														<b>Calories : </b>{{item.Calories}} KCals<br>
 													</p>
 												</div>
 												<div class="col-md-6 text-right">
@@ -210,8 +234,9 @@
 							<div class="row">
 								<c:url var="submitURL" value="submitOrder" />
 								<form action="${submitURL}" id="submitForm" method="post">
-								<input type="hidden" name="${_csrf.parameterName}"
-								value="${_csrf.token}" /></form>
+									<input type="hidden" name="${_csrf.parameterName}"
+										value="${_csrf.token}" />
+								</form>
 								<div class="col-md-6" ng-show="order.submit">
 									<input type="submit" class="btn btn-block btn-lg btn-success"
 										value="Submit Order" form="submitForm">

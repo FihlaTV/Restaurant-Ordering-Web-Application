@@ -88,6 +88,9 @@ public class ItemRating implements Serializable {
 
 	@Override
 	public String toString() {
+		if(item != null){
+			System.out.println("itemName = > " + item.getItemName());
+		}
 		return "ItemRating [id=" + id + ", rating=" + rating + ", customerId=" + customerId + ", orderId=" + orderId
 				+ "]";
 	}

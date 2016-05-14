@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -402,8 +404,39 @@ public class CustomerController {
 			temp.put("Category", item.getCategory());
 			temp.put("ItemName", item.getItemName());
 			temp.put("UnitPrice", item.getUnitPrice());
-			//temp.put("Picture", item.getPicture());
 			temp.put("Quantity", 1);
+			
+			//Determine the Item Average Rating
+			List<ItemRating> ratings = item.getRatings();
+			if(ratings != null){
+				Set<Integer> userRating = new TreeSet<>();
+				float avgRating = 0;
+				float totalRating = 0;
+				float numOfRating = ratings.size();
+				
+				for(ItemRating rating : ratings){
+					if(!userRating.contains(rating.getCustomerId())){
+						userRating.add(rating.getCustomerId());
+					}
+					totalRating += rating.getRating();
+				}
+				if(numOfRating != 0)
+					avgRating = totalRating/numOfRating;
+				
+				System.out.println("userRating ==> " + userRating.size());
+				System.out.println(totalRating + "/" + numOfRating + " == " + avgRating);
+				
+				if(userRating.size() >= 2){
+					temp.put("rating", avgRating);
+				}else{
+					temp.put("rating", 0);
+				}
+				userRating.clear();
+			}else{
+				temp.put("rating", 0);
+			}
+			
+			//Add the Item to the JSON Response Array
 			jsonArray.put(temp);
 		}
 		response.setContentType("application/json");

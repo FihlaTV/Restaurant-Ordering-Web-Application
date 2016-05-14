@@ -34,10 +34,11 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public List<Item> getActiveItems() {
+		String query = "select * from item where status = 1 order by category";
 		@SuppressWarnings("unchecked")
-		List<Item> resultItems = sessionFactory.getCurrentSession().createCriteria(Item.class)
-				.add(Restrictions.eq("status", true)).addOrder(Order.asc("category")).list();
-		return resultItems;
+		//List<Item> resultItems = sessionFactory.getCurrentSession().createCriteria(Item.class).add(Restrictions.eq("status", true)).addOrder(Order.asc("category")).list();
+		List<Item> result = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Item.class).list();
+		return result;
 	}
 
 	@Override

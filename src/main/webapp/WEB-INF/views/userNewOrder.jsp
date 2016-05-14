@@ -246,7 +246,7 @@
 								<div class="col-md-6" ng-hide="order.submit">
 									<a class="btn btn-block btn-lg btn-success"
 										ng-click="validatePickupDate()"
-										ng-disabled="order.pickupdateSet">{{order.buttonText}}</a>
+										ng-disabled="order.pickupdateSet || (cartItems.length==0)">{{order.buttonText}}</a>
 								</div>
 								<div class="col-md-6">
 									<button type="button" class="btn btn-block btn-lg btn-danger"

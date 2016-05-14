@@ -82,10 +82,9 @@ public class DaemonTaskDaoImpl implements DaemonTaskDao{
 		//Send the Confirmation Email to the Customer.
 		try{
 			//Get List of Orders and Send Confirmation Mails to all of them
-			String selectQuery =  "Select * FROM ORDERS"
-				+ " WHERE STATUS IN ('N','P') "
-				+ "AND (DATE_SUB(NOW(), INTERVAL 7 HOUR) BETWEEN ORDER_END_TIME AND PICKUP_TIME) "
-				+ "AND (DATE(PICKUP_TIME) = DATE(DATE_SUB(NOW(), INTERVAL 7 HOUR))) AND STATUS NOT IN ('C');";
+			String selectQuery =  "SELECT * FROM ORDERS WHERE STATUS IN ('N','P') "
+					+ "AND ((NOW() BETWEEN ORDER_END_TIME AND PICKUP_TIME) OR ((NOW()> ORDER_END_TIME) AND (ORDER_END_TIME = PICKUP_TIME))) "
+					+ "AND (DATE(PICKUP_TIME) = DATE(NOW())) AND STATUS NOT IN ('C');";
 			SQLQuery selectquery = session.createSQLQuery(selectQuery);
 			selectquery.addEntity(Order.class);
 			List<Order> orders = selectquery.list();

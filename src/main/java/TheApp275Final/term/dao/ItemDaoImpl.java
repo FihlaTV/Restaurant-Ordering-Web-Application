@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import TheApp275Final.term.model.Item;
+import TheApp275Final.term.model.ItemRating;
+import TheApp275Final.term.model.OrderItems;
 
 @Repository
 @Transactional
@@ -40,7 +42,8 @@ public class ItemDaoImpl implements ItemDao {
 
 	@Override
 	public void deleteItem(Item item) {
-		sessionFactory.getCurrentSession().saveOrUpdate(item);
+		String query = "update item set status = ? where id = ?";
+		sessionFactory.getCurrentSession().createSQLQuery(query).setParameter(0, item.isStatus()).setParameter(1, item.getId()).executeUpdate();
 	}
 
 	@Override
@@ -54,6 +57,32 @@ public class ItemDaoImpl implements ItemDao {
 		Item item = (Item) sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Item.class)
 				.uniqueResult();
 		return item.getPicture();
+	}
+	
+	@Override
+	public List<OrderItems> getRatingDetails(long l) {
+		String query = "select oi.* from ORDERS_ITEMS oi " 
+						+ " inner join ORDERS o "
+						+ " on o.ORDER_ID = oi.ORDER_ID"
+						+ " where o.ORDER_USER_ID = "+l+" " 
+						+ " and o.STATUS = 'F' "
+						+ " and o.order_id not in (select ir.ORDER_ID from ITEM_RATING ir where ir.CUSTOMER_ID = "+l+") ";
+		@SuppressWarnings("unchecked")
+		List<OrderItems> items = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(OrderItems.class).list();
+		return items;
+	}
+	
+	@Override
+	public void setRatings(List<ItemRating> items){
+		for(ItemRating item:items){
+			sessionFactory.getCurrentSession().saveOrUpdate(item);
+		}
+	}
+	
+	@Override
+	public Item getItemByName(String name) {
+		String query = "select * from item where item_name = '" + name + "' ";
+		return (Item)sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Item.class).uniqueResult();
 	}
 
 }

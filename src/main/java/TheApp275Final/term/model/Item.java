@@ -1,16 +1,22 @@
 package TheApp275Final.term.model;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
 @Entity
 @Table(name="item")
-public class Item {
+public class Item implements Serializable {
 	
 	/*This entity saves data pertaining to any item and is mapped to the item table in the database*/
 	@Id
@@ -30,6 +36,9 @@ public class Item {
     private boolean status;
     
     private byte[] picture;
+    
+    @OneToMany(fetch=FetchType.EAGER, mappedBy = "item",cascade={CascadeType.ALL})
+    private List<ItemRating> ratings;
     
     public Item(){
     	
@@ -141,5 +150,12 @@ public class Item {
 		this.picture = picture;
 	}
 
+	public List<ItemRating> getRatings() {
+		return ratings;
+	}
+
+	public void setRatings(List<ItemRating> ratings) {
+		this.ratings = ratings;
+	}
 	
 }

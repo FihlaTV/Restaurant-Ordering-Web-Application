@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import TheApp275Final.term.dao.ItemDao;
 import TheApp275Final.term.model.Item;
+import TheApp275Final.term.model.ItemRating;
 
 @Service("itemService")
 public class ItemServiceImpl implements ItemService{
@@ -43,6 +44,18 @@ public class ItemServiceImpl implements ItemService{
 	@Transactional
 	public byte[] getImage(int id){
 		return itemDao.getImage(id);
+	}
+	
+	@Override
+	@Transactional
+	public void setRatings(List<ItemRating> items) {
+		itemDao.setRatings(items);
+	}
+	
+	@Override
+	@Transactional
+	public Item getItemByName(String name) {
+		return itemDao.getItemByName(name);
 	}
 
 }

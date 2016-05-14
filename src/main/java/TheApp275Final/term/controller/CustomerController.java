@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +30,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.Gson;
+
 import TheApp275Final.term.dto.OrderTimes;
 import TheApp275Final.term.model.Customer;
 import TheApp275Final.term.model.Item;
+import TheApp275Final.term.model.ItemRating;
 import TheApp275Final.term.model.Order;
 import TheApp275Final.term.model.OrderItems;
 import TheApp275Final.term.model.Pipeline;
@@ -692,6 +696,73 @@ public class CustomerController {
 			userName = principal.toString();
 		}
 		return userName;
+	}
+	
+	@RequestMapping(value = "getRatingDetails", method = RequestMethod.POST)
+	public void getRatingDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		Customer customer = (Customer) httpSession.getAttribute("customer");
+		
+		JSONArray jsonArray = new JSONArray();
+		
+		System.out.println("In getrating Details ==> " + httpSession.getAttribute("customer").toString());
+		
+		if(customer != null){
+			System.out.println("In getrating Details: "+customer.getId());
+			List<OrderItems> items = customerService.getRatingDetails(customer.getId());
+			HashMap<Long, ArrayList<String>> map = new HashMap<Long, ArrayList<String>>();
+			
+			for (OrderItems item: items) {
+				if(!map.containsKey(item.getOrder().getOrderId())){
+					map.put(item.getOrder().getOrderId(), new ArrayList<String>());
+				}
+				map.get(item.getOrder().getOrderId()).add(item.getItemName());
+			}
+
+			Iterator<Entry<Long, ArrayList<String>>> it = map.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry<Long, ArrayList<String>> entry = it.next();
+				JSONObject temp = new JSONObject();
+				temp.put("orderId", entry.getKey());
+				JSONArray orderItems = new JSONArray();
+				for(String item : entry.getValue()){
+					JSONObject temp2 = new JSONObject();
+					temp2.put("item_name", item);
+					temp2.put("rating", 1);
+					temp2.put("order_id", entry.getKey());
+					temp2.put("customer_id", customer.getId());
+					orderItems.put(temp2);
+				}
+				temp.put("items", orderItems);
+				jsonArray.put(temp);
+			}
+			
+		}
+		response.setContentType("application/json");
+		response.getWriter().write(jsonArray.toString());
+	}
+	
+	@RequestMapping(value = "submitRating", method = RequestMethod.POST)
+	public void submitRating(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Gson gson = new Gson();
+		Enumeration param = request.getParameterNames();
+		while(param.hasMoreElements()){
+			String paramname = (String) param.nextElement();
+			System.out.println(paramname);
+		}
+		
+		System.out.println(request.getParameter("items"));
+		JSONArray orderItems = new JSONArray(request.getParameter("items"));
+		List<ItemRating> items = new ArrayList<ItemRating>();
+		for(int i=0; i<orderItems.length();i++){
+			JSONObject temp = orderItems.getJSONObject(i);
+			Item item = itemService.getItemByName(temp.getString("item_name"));
+			ItemRating itemRating = new ItemRating(item, temp.getInt("rating"), temp.getInt("customer_id"),temp.getInt("order_id"));
+			items.add(itemRating);
+		}
+		itemService.setRatings(items);
+		System.out.println("Ratings submitted");
+		
 	}
 
 }

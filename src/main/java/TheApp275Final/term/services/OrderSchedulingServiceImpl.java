@@ -74,6 +74,10 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 						+ pipeList.get(i).getOrderEndTime());
 				LocalTime order1EndTime = pipeList.get(i - 1).getOrderEndTime();
 				LocalTime order2StartTime = pipeList.get(i).getOrderStartTime();
+				long slotMinutes = ChronoUnit.MINUTES.between(order1EndTime, order2StartTime);
+				System.out.println("slotMinutes"+slotMinutes);
+				System.out.println("mins"+mins);
+				if(mins<=slotMinutes){
 				if (lowerLimitTime.isAfter(order1EndTime)|| lowerLimitTime.equals(order1EndTime)) {
 					if (lowerLimitTime.plusMinutes(mins).isBefore(order2StartTime)|| lowerLimitTime.plusMinutes(mins).equals(order2StartTime)) {
 						orderStartEndTime = new OrderTimes(lowerLimitTime, lowerLimitTime.plusMinutes(mins));
@@ -96,6 +100,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 						break;
 					}
 				}
+			}
 			}
 		}
 

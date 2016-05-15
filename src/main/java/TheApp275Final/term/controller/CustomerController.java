@@ -337,6 +337,8 @@ public class CustomerController {
 			int minKey = -1;
 			LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 			LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);
+			System.out.println("busPickUpStartTime = " + busPickUpStartTime);
+			System.out.println("PickUpTime = " + PickUpTime);
 			if(slots != null){
 				for (Entry<Integer, OrderTimes> entry : slots.entrySet()) {
 					System.out.println("Suggested pickup time is by getEarliestTimeSlots - with pipeline number - "
@@ -346,8 +348,11 @@ public class CustomerController {
 						minLocalTime=entry.getValue().getOrderStartTime();
 					}
 				}
-				if(!slots.get(minKey).getOrderEndTime().isBefore(busPickUpStartTime)){
-					PickUpTime=slots.get(minKey).getOrderEndTime();
+				System.out.println("minKey == > " + minKey);
+				if(minKey != -1){
+					if(!slots.get(minKey).getOrderEndTime().isBefore(busPickUpStartTime)){
+						PickUpTime=slots.get(minKey).getOrderEndTime();
+					}
 				}
 			}
 			
@@ -498,10 +503,13 @@ public class CustomerController {
 			orderSchedulingService.saveOrder(order);
 			
 			//Send the Confirmation Email to the Customer
-			emailService.sendOrderConfirmationMail(customer, order);
+			//emailService.sendOrderConfirmationMail(customer, order);
 			
 			// Create An Order and Attach To Session
 			if (httpSession.getAttribute("Order") != null) {
+				
+				httpSession.setAttribute("OrderAspect", order);
+				
 				Order newOrder = new Order();
 				List<OrderItems> orderItems = new ArrayList<>();
 				newOrder.setOrderItems(orderItems);

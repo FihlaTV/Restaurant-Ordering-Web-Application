@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartResolver;
@@ -18,10 +19,11 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
-@ComponentScan(basePackages = "TheApp275Final.term.*")
-@Import({ Hibernateconfig.class })
+@Import({ Hibernateconfig.class})
 @EnableTransactionManagement
 @EnableWebMvc
+@EnableAspectJAutoProxy
+@ComponentScan(basePackages = "TheApp275Final.term.*")
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
 /*	@Autowired

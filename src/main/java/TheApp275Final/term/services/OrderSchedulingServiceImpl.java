@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -146,8 +147,20 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			}
 		} else {
 			LocalTime upperLimit = endTime;
-			LocalTime lowerLimit = (startTimeNow.isBefore(startTime)) ? startTime.minusMinutes(60).minusMinutes(mins)
-					: startTimeNow;
+			LocalTime lowerLimit;
+			if(startTimeNow.isBefore(startTime)){
+				if(mins>ChronoUnit.MINUTES.between(LocalTime.MIDNIGHT,startTime.minusMinutes(60))){
+					lowerLimit=LocalTime.MIDNIGHT;
+				}
+				else{
+					lowerLimit=startTime.minusMinutes(60).minusMinutes(mins);
+				}
+			}
+			else{
+				lowerLimit=startTimeNow;
+			}
+			/*LocalTime lowerLimit = (startTimeNow.isBefore(startTime)) ? startTime.minusMinutes(60).minusMinutes(mins)
+					: startTimeNow;*/
 			System.out.println("Upper Limit for getearliest slot is -"+ upperLimit);
 			System.out.println("lower Limit for getearliest slot is -"+ lowerLimit);
 			addBoundaryConditions(orderTimesMap, lowerLimit, upperLimit);

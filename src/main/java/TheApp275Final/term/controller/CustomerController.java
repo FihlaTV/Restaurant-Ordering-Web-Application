@@ -214,7 +214,7 @@ public class CustomerController {
 					respTemp.put("pickupdatetime", true);
 					respTemp.put("estimatedDateTime", pickuptime);
 				} else {
-					System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
+					System.out.println("User Slot NOT Feasible 1!!! Finding Alternatives after finding no slots for mentioned Pick up Time");
 					slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
 					LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);
 					LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
@@ -254,7 +254,7 @@ public class CustomerController {
 					}
 				}
 			} else {
-				System.out.println("Failed checkPickUpTime !!!!!  User Slot NOT Feasible!!! Finding Alternatives");
+				System.out.println("Failed checkPickUpTime !!!!!  User Slot NOT Feasible 2!!! Finding Alternatives because Pick up time is out of business times");
 				slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
 				LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 				LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);

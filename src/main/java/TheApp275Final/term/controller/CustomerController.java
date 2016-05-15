@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -213,8 +214,10 @@ public class CustomerController {
 					respTemp.put("pickupdatetime", true);
 					respTemp.put("estimatedDateTime", pickuptime);
 				} else {
-					System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
+					System.out.println("User Slot NOT Feasible 1!!! Finding Alternatives after finding no slots for mentioned Pick up Time");
 					slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
+					LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);
+					LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 					if(slots != null){
 						LocalTime minLocalTime = LocalTime.of(23, 59);
 						int minKey = 0;
@@ -226,6 +229,10 @@ public class CustomerController {
 								minLocalTime=entry.getValue().getOrderStartTime();
 							}
 						}
+						if(slots.get(minKey).getOrderEndTime().isAfter(busPickUpStartTime)){
+							PickUpTime=slots.get(minKey).getOrderEndTime();
+							System.out.println("Condition 111 =>  " + PickUpTime);
+						}
 						Pipeline pipeline = TheAppUtility.getPipeline(minKey);
 				        
 						order.setPipeline(pipeline);
@@ -233,11 +240,11 @@ public class CustomerController {
 						LocalTime endTime = slots.get(minKey).getOrderEndTime();
 						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
 						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),TheAppUtility.convertStringToLocalTime(pickuptime)));
+						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),PickUpTime));
 						System.out.println(order.toString());
 						
 						//Set Response
-						String estimatedPickUpDateTime =  pickuptime.toString();
+						String estimatedPickUpDateTime =  PickUpTime.toString();
 						System.out.println(estimatedPickUpDateTime);
 						
 						respTemp.put("pickupdatetime", true);
@@ -247,10 +254,11 @@ public class CustomerController {
 					}
 				}
 			} else {
-				System.out.println("User Slot NOT Feasible!!! Finding Alternatives");
+				System.out.println("Failed checkPickUpTime !!!!!  User Slot NOT Feasible 2!!! Finding Alternatives because Pick up time is out of business times");
 				slots = orderSchedulingService.getEarliestTimeSlots(date,(int) orderProcessingTime);
 				LocalTime busPickUpStartTime = TheAppUtility.convertStringToLocalTime(businessStartTime);
 				LocalTime PickUpTime= TheAppUtility.convertStringToLocalTime(businessStartTime);
+				System.out.println("Default Value Set ==> " + PickUpTime + "/" + busPickUpStartTime );
 				if(slots != null){
 					LocalTime minLocalTime = LocalTime.of(23, 59);
 					int minKey = 0;
@@ -262,8 +270,9 @@ public class CustomerController {
 							minLocalTime=entry.getValue().getOrderStartTime();
 						}
 					}
-					if(!slots.get(minKey).getOrderEndTime().isBefore(busPickUpStartTime)){
+					if(slots.get(minKey).getOrderEndTime().isAfter(busPickUpStartTime)){
 						PickUpTime=slots.get(minKey).getOrderEndTime();
+						System.out.println("Condition 111 =>  " + PickUpTime);
 					}
 					Pipeline pipeline = TheAppUtility.getPipeline(minKey);
 			        
@@ -275,6 +284,7 @@ public class CustomerController {
 					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),PickUpTime));
 					System.out.println(order.toString());
 					
+					System.out.println("Final Value of PickUpTime ==> " + PickUpTime);
 					//Set Response
 					String estimatedPickUpDateTime =  PickUpTime.toString();
 					System.out.println(estimatedPickUpDateTime);
@@ -498,6 +508,8 @@ public class CustomerController {
 
 			// Setting the user id in order object
 			order.setCustomer(customer);
+			
+			order.setOrderPlacementTime(LocalDateTime.now());
 
 			// This will return true after the saving the order
 			orderSchedulingService.saveOrder(order);

@@ -73,22 +73,22 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 						+ pipeList.get(i).getOrderEndTime());
 				LocalTime order1EndTime = pipeList.get(i - 1).getOrderEndTime();
 				LocalTime order2StartTime = pipeList.get(i).getOrderStartTime();
-				if (lowerLimitTime.isAfter(order1EndTime)) {
-					if (lowerLimitTime.plusMinutes(mins).isBefore(order2StartTime)) {
+				if (lowerLimitTime.isAfter(order1EndTime)|| lowerLimitTime.equals(order1EndTime)) {
+					if (lowerLimitTime.plusMinutes(mins).isBefore(order2StartTime)|| lowerLimitTime.plusMinutes(mins).equals(order2StartTime)) {
 						orderStartEndTime = new OrderTimes(lowerLimitTime, lowerLimitTime.plusMinutes(mins));
 						orderStartEndTimeMap.put(pipeno, orderStartEndTime);
 						System.out.println("in loop1");
 						break;
 					}
 				} else if (lowerLimitTime.isBefore(order2StartTime)) {
-					if (order1EndTime.plusMinutes(mins).isBefore(order2StartTime)) {
+					if (order1EndTime.plusMinutes(mins).isBefore(order2StartTime)|| order1EndTime.plusMinutes(mins).equals(order2StartTime)) {
 						orderStartEndTime = new OrderTimes(order1EndTime, order1EndTime.plusMinutes(mins));
 						orderStartEndTimeMap.put(pipeno, orderStartEndTime);
 						System.out.println("in loop2");
 						break;
 					}
 				} else if (upperLimitTime.isBefore(order2StartTime)) {
-					if (upperLimitTime.plusMinutes(mins).isBefore(order2StartTime)) {
+					if (upperLimitTime.plusMinutes(mins).isBefore(order2StartTime)|| upperLimitTime.plusMinutes(mins).equals(order2StartTime)) {
 						orderStartEndTime = new OrderTimes(upperLimitTime, upperLimitTime.minusMinutes(mins));
 						orderStartEndTimeMap.put(pipeno, orderStartEndTime);
 						System.out.println("in loop3");
@@ -108,8 +108,10 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			return null;
 		}
 		if (pickupDate.after(new Date())) {
+			System.out.println("Pick up Date is after todays date so StartTimeNow- "+LocalTime.MIDNIGHT);
 			startTimeNow = LocalTime.MIDNIGHT;
 		} else {
+			System.out.println("Pick up Date is todays date so StartTimeNow- "+LocalTime.now());
 			startTimeNow = LocalTime.now();
 		}
 		HashMap<Integer, OrderTimes> orderStartEndTimeMap = new HashMap<>();
@@ -146,6 +148,8 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			LocalTime upperLimit = endTime;
 			LocalTime lowerLimit = (startTimeNow.isBefore(startTime)) ? startTime.minusMinutes(60).minusMinutes(mins)
 					: startTimeNow;
+			System.out.println("Upper Limit for getearliest slot is -"+ upperLimit);
+			System.out.println("lower Limit for getearliest slot is -"+ lowerLimit);
 			addBoundaryConditions(orderTimesMap, lowerLimit, upperLimit);
 			HashMap<Integer, OrderTimes> mapFinal = getFeasibleOrderTimes(orderTimesMap, upperLimit, lowerLimit, mins);
 			for (int key : mapFinal.keySet()) {

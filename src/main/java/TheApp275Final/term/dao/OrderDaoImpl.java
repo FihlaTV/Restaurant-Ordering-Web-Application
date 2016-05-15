@@ -26,7 +26,7 @@ public class OrderDaoImpl implements OrderDao {
 	
 	@Override
 	public List<Order> getOrderReport(String startTime, String endTime, String sortBy){
-		String query = "select * from ORDERS where ORDER_PLACEMENT_TIME between '"+startTime+"' and '"+endTime+"' and status != 'C' order by '"+sortBy+"'";
+		String query = "select * from ORDERS where ORDER_PLACEMENT_TIME between '"+startTime+"' and '"+endTime+"' and status != 'C' order by "+sortBy+"";
 		@SuppressWarnings("unchecked")
 		List<Order> orders = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Order.class).list();
 		return orders;

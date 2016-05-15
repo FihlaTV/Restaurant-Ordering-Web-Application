@@ -233,11 +233,26 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 					LocalTime lowerLimitTime = pickupTimeObj.minusMinutes(60).minusMinutes(mins);
 					addBoundaryConditions(orderTimesMap, upperLimitTime);
 					orderStartEndTimeMap = getFeasibleOrderTimes(orderTimesMap, upperLimitTime, lowerLimitTime, mins);
+					ArrayList<Integer> keyList = new ArrayList<>();
+					ArrayList<Integer> keyRemList = new ArrayList<>();
 					for (int key : orderStartEndTimeMap.keySet()) {
 						System.out.println(key + "=======" + orderStartEndTimeMap.get(key).toString());
-
-						return orderStartEndTimeMap;
+						if(orderStartEndTimeMap.get(key).getOrderEndTime().isBefore(upperLimitTime)||orderStartEndTimeMap.get(key).getOrderEndTime().equals(upperLimitTime)){
+							keyList.add(key);
+						}
+						else{
+							keyRemList.add(key);
+						}
 					}
+					if(keyList.size()==0){
+						return null;
+					}
+					else{
+						for(int i : keyRemList){
+							orderStartEndTimeMap.remove(i);
+						}
+					}
+					return orderStartEndTimeMap;
 				}
 			} else {
 				System.out.println("pickup time is too early to process the order");
@@ -247,7 +262,6 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			System.out.println("pickup time is not in range of business hours");
 			return null;
 		}
-		return null;
 	}
 
 	private void addBoundaryConditions(HashMap<Integer, ArrayList<OrderTimes>> orderTimesMap,

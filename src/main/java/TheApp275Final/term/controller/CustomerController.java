@@ -274,27 +274,31 @@ public class CustomerController {
 							minLocalTime=entry.getValue().getOrderStartTime();
 						}
 					}
-					if(slots.get(minKey).getOrderEndTime().isAfter(busPickUpStartTime)){
-						PickUpTime=slots.get(minKey).getOrderEndTime();
-						System.out.println("Condition 111 =>  " + PickUpTime);
+					if(slots.size()>0){
+						if(slots.get(minKey).getOrderEndTime().isAfter(busPickUpStartTime)){
+							PickUpTime=slots.get(minKey).getOrderEndTime();
+							System.out.println("Condition 111 =>  " + PickUpTime);
+						}
+						Pipeline pipeline = TheAppUtility.getPipeline(minKey);
+				        
+						order.setPipeline(pipeline);
+						LocalTime startTime = slots.get(minKey).getOrderStartTime();
+						LocalTime endTime = slots.get(minKey).getOrderEndTime();
+						order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
+						order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
+						order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),PickUpTime));
+						System.out.println(order.toString());
+						
+						System.out.println("Final Value of PickUpTime ==> " + PickUpTime);
+						//Set Response
+						String estimatedPickUpDateTime =  PickUpTime.toString();
+						System.out.println(estimatedPickUpDateTime);
+						
+						respTemp.put("pickupdatetime", true);
+						respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
+					}else{
+						respTemp.put("pickupdatetime", false);
 					}
-					Pipeline pipeline = TheAppUtility.getPipeline(minKey);
-			        
-					order.setPipeline(pipeline);
-					LocalTime startTime = slots.get(minKey).getOrderStartTime();
-					LocalTime endTime = slots.get(minKey).getOrderEndTime();
-					order.setOrderStartTime(LocalDateTime.of(LocalDate.parse(pickupdate),startTime));
-					order.setOrderEndTime(LocalDateTime.of(LocalDate.parse(pickupdate),endTime));
-					order.setPickUpTime(LocalDateTime.of(LocalDate.parse(pickupdate),PickUpTime));
-					System.out.println(order.toString());
-					
-					System.out.println("Final Value of PickUpTime ==> " + PickUpTime);
-					//Set Response
-					String estimatedPickUpDateTime =  PickUpTime.toString();
-					System.out.println(estimatedPickUpDateTime);
-					
-					respTemp.put("pickupdatetime", true);
-					respTemp.put("estimatedDateTime", estimatedPickUpDateTime);
 				}else{
 					respTemp.put("pickupdatetime", false);
 				}

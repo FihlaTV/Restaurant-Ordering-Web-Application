@@ -108,8 +108,10 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			return null;
 		}
 		if (pickupDate.after(new Date())) {
+			System.out.println("Pick up Date is after todays date so StartTimeNow- "+LocalTime.MIDNIGHT);
 			startTimeNow = LocalTime.MIDNIGHT;
 		} else {
+			System.out.println("Pick up Date is todays date so StartTimeNow- "+LocalTime.now());
 			startTimeNow = LocalTime.now();
 		}
 		HashMap<Integer, OrderTimes> orderStartEndTimeMap = new HashMap<>();
@@ -146,6 +148,8 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 			LocalTime upperLimit = endTime;
 			LocalTime lowerLimit = (startTimeNow.isBefore(startTime)) ? startTime.minusMinutes(60).minusMinutes(mins)
 					: startTimeNow;
+			System.out.println("Upper Limit for getearliest slot is -"+ upperLimit);
+			System.out.println("lower Limit for getearliest slot is -"+ lowerLimit);
 			addBoundaryConditions(orderTimesMap, lowerLimit, upperLimit);
 			HashMap<Integer, OrderTimes> mapFinal = getFeasibleOrderTimes(orderTimesMap, upperLimit, lowerLimit, mins);
 			for (int key : mapFinal.keySet()) {

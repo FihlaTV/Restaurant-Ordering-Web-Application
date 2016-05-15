@@ -503,6 +503,8 @@ public class CustomerController {
 
 			// Setting the user id in order object
 			order.setCustomer(customer);
+			
+			order.setOrderPlacementTime(LocalDateTime.now());
 
 			// This will return true after the saving the order
 			orderSchedulingService.saveOrder(order);

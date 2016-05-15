@@ -65,7 +65,7 @@ FoodOrderApp.directive('starRating', starRating);
 FoodOrderApp
 		.controller(
 				'OrderController',
-				function($scope, $http) {
+				function($scope, $http,$timeout) {
 
 					$scope.csrfToken = {};
 					$scope.items = [];
@@ -373,10 +373,10 @@ FoodOrderApp
 									console.log(data);
 									$scope.cartItems = data;
 									$scope.order.submit = false;
-									console.log("Menu Item Added to Cart!!");
+									console.log("changeQty Adjusted to Cart!!");
 								}).error(
 								function(data, status, headers, config) {
-									console.log("Error Added Menu Items :: "
+									console.log("changeQty Menu Items :: "
 											+ data);
 								});
 					}

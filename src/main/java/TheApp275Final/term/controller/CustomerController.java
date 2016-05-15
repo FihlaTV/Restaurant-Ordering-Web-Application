@@ -607,7 +607,7 @@ public class CustomerController {
 				for (OrderItems orderItem : orderItems) {
 					if (request.getParameter("item[ItemName]").equals(orderItem.getItemName())) {
 						int qty = orderItem.getQuantity();
-						qty++;
+						qty = Integer.valueOf(request.getParameter("item[Quantity]"));
 						orderItem.setQuantity(qty);
 					}
 					JSONObject jsonOrderItem = new JSONObject();

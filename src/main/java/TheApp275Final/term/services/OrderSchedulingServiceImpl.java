@@ -237,7 +237,7 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 					ArrayList<Integer> keyRemList = new ArrayList<>();
 					for (int key : orderStartEndTimeMap.keySet()) {
 						System.out.println(key + "=======" + orderStartEndTimeMap.get(key).toString());
-						if(orderStartEndTimeMap.get(key).getOrderEndTime().isBefore(upperLimitTime)||orderStartEndTimeMap.get(key).getOrderEndTime().equals(upperLimitTime)){
+						if(orderStartEndTimeMap.get(key).getOrderStartTime().isBefore(upperLimitTime)||orderStartEndTimeMap.get(key).getOrderStartTime().equals(upperLimitTime)){
 							keyList.add(key);
 						}
 						else{
@@ -267,7 +267,9 @@ public class OrderSchedulingServiceImpl implements OrderSchedulingService {
 	private void addBoundaryConditions(HashMap<Integer, ArrayList<OrderTimes>> orderTimesMap,
 			LocalTime upperLimitTime) {
 		for (Map.Entry<Integer, ArrayList<OrderTimes>> pipeline : orderTimesMap.entrySet()) {
-			pipeline.getValue().add(new OrderTimes(upperLimitTime, upperLimitTime));
+			//pipeline.getValue().add(new OrderTimes(upperLimitTime, upperLimitTime));
+			LocalTime endTime = TheAppUtility.convertStringToLocalTime(businessEndTime);
+			pipeline.getValue().add(new OrderTimes(endTime,endTime ));
 			System.out.println("pipeline size after adding boundarie conditions" + pipeline.getValue().size());
 			System.out.println("upperLimitTime " + upperLimitTime);
 		}

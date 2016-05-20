@@ -48,8 +48,10 @@ public class OrderDaoImpl implements OrderDao {
 	public void resetOrders() {
 		String query = "select * from ORDERS";
 		List<Order> orders = sessionFactory.getCurrentSession().createSQLQuery(query).addEntity(Order.class).list();
-		for(Order order:orders){
-			sessionFactory.getCurrentSession().delete(order);;
+		if(orders != null){
+			for(Order order:orders){
+				sessionFactory.getCurrentSession().delete(order);;
+			}
 		}
 	}
 	
